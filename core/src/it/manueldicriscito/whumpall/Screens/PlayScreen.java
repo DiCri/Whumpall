@@ -34,7 +34,7 @@ import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 
 public class PlayScreen implements Screen, InputProcessor {
     public static final int GAME_START = 0;
-    // public static final int GAME_PAUSE = 1;
+    public static final int GAME_PAUSE = 1;
     public static final int GAME_PLAY = 2;
     public static final int GAME_FINISH = 3;
 
