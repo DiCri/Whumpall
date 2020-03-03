@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import it.manueldicriscito.whumpall.Screens.LevelListScreen;
 import it.manueldicriscito.whumpall.Screens.PlayScreen;
 
 public class Whumpall extends Game {
@@ -104,7 +105,8 @@ public class Whumpall extends Game {
 
 		Assets.load();
 
-		setScreen(new PlayScreen(this));
+		//setScreen(new PlayScreen(this));
+		setScreen(new LevelListScreen(this));
 	}
 
 	@Override
