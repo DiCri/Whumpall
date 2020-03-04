@@ -1,6 +1,10 @@
 package it.manueldicriscito.whumpall;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+
+import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
+import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 
 public class Player {
     public Vector2 pos;
@@ -35,18 +39,18 @@ public class Player {
     private void handleInput() {
 
     }
-    void update(float delta) {
+    void update(float delta, OrthographicCamera cam) {
         handleInput();
         if(!paused) {
             lpos.set(pos);
             pos.y -= vel.y * delta;
             vel.y += gravity * delta;
-            if (pos.x + size > 1080) {
+            if (pos.x + size/2 > getScreenRight(cam)) {
                 vel.x = -vel.x;
-                pos.x = 1080 - size;
-            } else if (pos.x < 0) {
+                pos.x = getScreenRight(cam) - size/2;
+            } else if (pos.x - size/2 < getScreenLeft(cam)) {
                 vel.x = -vel.x;
-                pos.x = 0;
+                pos.x = getScreenLeft(cam)+size/2;
             }
             pos.x += vel.x * delta;
         }

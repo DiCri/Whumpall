@@ -186,6 +186,15 @@ public class PlayScreen implements Screen, InputProcessor {
             level.pads.clear();
             level.gsTimer.reset();
         }
+        game.batch.begin();
+        game.batch.setColor(Color.WHITE);
+        game.batch.draw(Assets.batteryTexture, getScreenLeft(game.cam)+20, getScreenTop(game.cam)-160, 128, 128);
+        game.batch.end();
+        game.sr.begin(ShapeRenderer.ShapeType.Filled);
+        game.sr.setColor(Color.WHITE);
+
+        game.sr.rect(getScreenLeft(game.cam)+20+11, getScreenTop(game.cam)-160+43, 90-(90f*level.getManaUsed()/level.maxMana), 43);
+        game.sr.end();
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");
 
@@ -194,7 +203,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
 
     private void update(float delta) {
-        level.update(delta);
+        level.update(delta, game.cam);
         //begin
         Animations.run();
         if (gameState != GAME_FINISH) {

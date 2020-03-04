@@ -31,6 +31,7 @@ public class Assets {
     public static Texture titleBottomTexture;
     public static Texture titleShadowTexture;
     public static Texture titleWhiteTexture;
+    public static Texture batteryTexture;
     public static BitmapFont fontKoHoRegular100;
     public static BitmapFont fontKoHoItalic50;
     public static BitmapFont fontTibitto50;
@@ -77,6 +78,7 @@ public class Assets {
         titleWhiteTexture = loadTexture("title_white.png");
         playerGunTexture = loadTexture("gun.png");
         wipTexture = loadTexture("wip.png");
+        batteryTexture = loadTexture("battery.png");
         //lightBlueColor = new Color(0, 0.678f, 0.710f, 1);
         lightBlueColor = new Color(0x00adb5ff);
         darkLightBlueColor = new Color(0x008589ff);

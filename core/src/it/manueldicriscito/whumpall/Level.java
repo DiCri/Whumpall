@@ -2,6 +2,7 @@ package it.manueldicriscito.whumpall;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -28,9 +29,8 @@ public class Level {
     private int initJump;
     private int initGrav;
     public int maxPads;
-    private int maxMana;
+    public int maxMana;
     public int attempts;
-    private int moneys;
     public int currentLevel;
     public int gameState;
     public DiCriTimer timer;
@@ -80,9 +80,9 @@ public class Level {
     public void setGameState(int gameState) {
         this.gameState = gameState;
     }
-    public void update(float delta) {
+    public void update(float delta, OrthographicCamera cam) {
         if(gameState!=GAME_FINISH) {
-            player.update(delta);
+            player.update(delta, cam);
             if(gameState!=GAME_START && (player.pos.y+player.size/2<=-100 || player.pos.y-player.size/2>=1920+200)) {
                 this.timer.save("Player Death");
                 gameState = GAME_START;
@@ -104,12 +104,12 @@ public class Level {
                 }
             }
             if(gameState==GAME_START) {
-                playerGuide.update(delta);
+                playerGuide.update(delta, cam);
                 if(gsTimer.get()>1000) {
-                    playerGuide.alpha = 150-(gsTimer.get()-1000)*150/500;
+                    playerGuide.alpha = 150-(gsTimer.get()-1000)*150/500f;
                     playerGuide.alpha/=255;
                 } else if(gsTimer.get()<300) {
-                    playerGuide.alpha = gsTimer.get()/2;
+                    playerGuide.alpha = gsTimer.get()/2f;
                     playerGuide.alpha/=255;
                 } else playerGuide.alpha = 150f/255f;
             }
@@ -233,41 +233,12 @@ public class Level {
             lpads.add(new_pad);
 
             new_pad = new Platform();
-            new_pad.rect.set(400, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_LEFT;
-            new_pad.putShield();
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
             new_pad.rect.set(700, 1020, 250, 40);
             new_pad.fixed = true;
             new_pad.dir = PAD_DIR_FINISH;
             new_pad.add();
             lpads.add(new_pad);
 
-            /*
-            new_pad = new Platform();
-            new_pad.rect.set(500, 1500, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            new_pad.gravityChange = -1;
-            lpads.add(new_pad);
-            */
-            /*
-            new_gzone = new GravityZone();
-            new_gzone.setVertices(new float[] {0, 1920, 1080, 1920, 1080, 0});
-            new_gzone.gravity = -1500;
-            gzones.add(new_gzone);
-             */
-            /*
-            new_gzone = new GravityZone();
-            new_gzone.setVertices(new float[] {0, 0, 0, 1920/2, 1080, 1920/2, 1080, 0});
-            new_gzone.gravity = -1500;
-            gzones.add(new_gzone);
-            */
 
             initPos.x = 100;
             initPos.y = 1220;
@@ -276,8 +247,7 @@ public class Level {
             initSpeed.x = 300;
             initSpeed.y = -50;
             maxMana = 200;
-            maxPads = 100;
-            moneys = 100;
+            maxPads = 1;
         } else if(level==2) {
             Platform new_pad;
             GravityZone new_gzone;
@@ -318,8 +288,14 @@ public class Level {
             initSpeed.y = -50;
             maxMana = 200;
             maxPads = 100;
-            moneys = 100;
         }
+    }
+    public int getManaUsed() {
+        int manaUsed = 0;
+        for(Platform p : pads) {
+            manaUsed += p.rect.width;
+        }
+        return manaUsed;
     }
     public void respawnPlayerGuide() {
         playerGuide.pos.x = initPos.x;
