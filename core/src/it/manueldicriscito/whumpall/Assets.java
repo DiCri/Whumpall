@@ -33,6 +33,8 @@ public class Assets {
     public static Texture titleWhiteTexture;
     public static BitmapFont fontKoHoRegular100;
     public static BitmapFont fontKoHoItalic50;
+    public static BitmapFont fontTibitto50;
+    public static BitmapFont fontKoho;
     static BitmapFont fontKoHoBold50;
     private static BitmapFont fontKoHoBold100;
     private static Music elegyMusic;
@@ -90,22 +92,19 @@ public class Assets {
         FreeTypeFontGenerator generator = loadFontGenerator("KoHo/KoHo-Regular.ttf");
         if(generator!=null) {
             FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-            params.size = 100;
-            params.color = Color.WHITE;
+            params.size = 100; params.color = Color.WHITE;
             fontKoHoRegular100 = generator.generateFont(params);
             generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Italic.ttf"));
-            params.size = 50;
-            params.color = Color.WHITE;
+            params.size = 50; params.color = Color.WHITE;
             fontKoHoItalic50 = generator.generateFont(params);
             generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Bold.ttf"));
-            params.size = 50;
-            params.color = Color.WHITE;
+            params.size = 50; params.color = Color.WHITE;
             fontKoHoBold50 = generator.generateFont(params);
-            generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Bold.ttf"));
-            params.size = 100;
-            params.color = Color.WHITE;
+            params.size = 100; params.color = Color.WHITE;
             fontKoHoBold100 = generator.generateFont(params);
+            generator = new FreeTypeFontGenerator(Gdx.files.internal("Tibitto/TIBITTO_.TTF"));
+            params.size = 100; params.color = Color.WHITE;
+            fontTibitto50 = generator.generateFont(params);
         }
 
     }

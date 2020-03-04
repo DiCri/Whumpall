@@ -41,6 +41,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
     private int gameState;
     boolean tap = false;
+    int lv;
 
     private Whumpall game;
     private GlyphLayout glyphLayout = new GlyphLayout();
@@ -61,15 +62,16 @@ public class PlayScreen implements Screen, InputProcessor {
 
     private Vector3 touchPos = new Vector3();
 
-    public PlayScreen(Whumpall game) {
+    public PlayScreen(Whumpall game, int lv) {
         this.game = game;
         Gdx.input.setInputProcessor(this);
 
-        level = new Level(1);
-        lr = new LevelRenderer(game, level);
+        this.lv = lv;
+        this.level = new Level(lv);
+        lr = new LevelRenderer(game, this.level);
 
         gsTimer = new DiCriTimer();
-        level.gsTimer = gsTimer;
+        this.level.gsTimer = gsTimer;
         gsTimer.start();
 
 
@@ -77,6 +79,12 @@ public class PlayScreen implements Screen, InputProcessor {
         bigCircle.setTexture(Assets.bigCircleTexture);
         bigCircle.setColor(new Color(1, 1, 1, 1));
         bigCircle.makeAnimatable();
+        bigCircle.setRect(new Rectangle(this.level.player.pos.x-2000, this.level.player.pos.y-2000, 4000, 4000));
+
+        Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width,Animations.AnimationMove.to,0, false, 1500, 0);
+        Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force, bigCircle.getAnimatableRect().x,Animations.AnimationMove.to,this.level.player.pos.x, false, 1500, 0);
+        Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.to,this.level.player.pos.y, false, 1500, 0);
+        level.showTapToStart();
 
         backButton = new CircleButton();
         backButton.texture = Assets.backButtonTexture;
@@ -128,7 +136,7 @@ public class PlayScreen implements Screen, InputProcessor {
         }
         game.sr.end();
         game.batch.begin();
-        if(bigCircle.arect.getWidth()>1920) {
+        if(bigCircle.arect.getWidth()>1920 && gameState == GAME_FINISH) {
             backButton.drawTexture(game.batch);
             nextButton.drawTexture(game.batch);
             retryButton.drawTexture(game.batch);
@@ -271,7 +279,7 @@ public class PlayScreen implements Screen, InputProcessor {
             }
             if(retryButton.tap) {
                 if(retryButton.hover((int)touchPos.x, (int)touchPos.y)) {
-                    level.generateLevel(1);
+                    level.generateLevel(lv);
                     gameState = GAME_START;
                     level.gameState = GAME_START;
                     level.player.pause();

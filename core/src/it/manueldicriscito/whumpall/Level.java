@@ -65,7 +65,7 @@ public class Level {
         totalBlocksWidth = new Animations.AnimatableFloat(0);
         gameState = GAME_START;
         darkDisplay = new Animations.AnimatableFloat(0);
-        ttsAlpha = new Animations.AnimatableFloat(1);
+        ttsAlpha = new Animations.AnimatableFloat(0);
         timer = new DiCriTimer();
         gsTimer = new DiCriTimer();
         gsTimer.start();
