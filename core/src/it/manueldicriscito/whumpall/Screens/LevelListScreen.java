@@ -1,6 +1,7 @@
 package it.manueldicriscito.whumpall.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,6 +21,9 @@ import it.manueldicriscito.whumpall.CircleButton;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Whumpall;
 
+import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_COMPLETED;
+import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_LOCKED;
+import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
@@ -42,15 +46,47 @@ public class LevelListScreen implements Screen {
 
         game.cam.position.set(540, 960, 0);
         for(int i=0; i<15; i++) {
+            if(!game.prefs.contains("lv"+i)) {
+                if(i==0) {
+                    game.prefs.putInteger("lv"+i, LEVELSTATE_UNLOCKED);
+                } else {
+                    if(game.prefs.getInteger("lv"+(i-1))==LEVELSTATE_COMPLETED) {
+                        game.prefs.putInteger("lv"+i, LEVELSTATE_UNLOCKED);
+                    } else {
+                        game.prefs.putInteger("lv"+i, LEVELSTATE_LOCKED);
+                    }
+                }
+            }
             CircleButton cb = new CircleButton();
-            cb.color.set(Color.WHITE);
-            cb.shadowColor.set(Assets.darkerBlueColor);
+            int levelState = game.prefs.getInteger("lv"+i);
+            switch(levelState) {
+                case LEVELSTATE_COMPLETED:
+                    cb.color.set(Color.WHITE);
+                    cb.defaultColor.set(Color.WHITE);
+                    cb.shadowColor.set(Assets.darkerBlueColor);
+                    cb.tapColor.set(Color.WHITE);
+                    break;
+                case LEVELSTATE_UNLOCKED:
+                    cb.color.set(Assets.darkerBlueColor);
+                    cb.defaultColor.set(Assets.darkerBlueColor);
+                    cb.tapColor.set(Assets.darkBlueColor);
+                    cb.shadowColor.set(Color.WHITE);
+                    break;
+                case LEVELSTATE_LOCKED:
+                    cb.color.set(Assets.darkerBlueColor);
+                    cb.defaultColor.set(Assets.darkerBlueColor);
+                    cb.tapColor.set(Assets.darkerBlueColor);
+                    cb.shadowColor.set(Assets.darkerBlueColor);
+                    break;
+            }
             cb.size.set(80);
             cb.dSize = 80;
             cb.hSize = 90;
             cb.pos.set(getScreenLeft(game.cam)+130+200*(i%5f), getScreenTop(game.cam)-(200+((float)Math.floor(i/5f)*200)));
             levelButtons.add(cb);
         }
+        game.prefs.flush();
+
         bigCircle = new Image();
         bigCircle.setTexture(Assets.bigCircleTexture);
         bigCircle.setColor(new Color(1, 1, 1, 1));
@@ -85,6 +121,11 @@ public class LevelListScreen implements Screen {
         BitmapFont levelButtonsFont = Assets.fontTibitto50;
         levelButtonsFont.setColor(Assets.darkerBlueColor);
         for(CircleButton cb : levelButtons) {
+            levelButtonsFont.setColor(Assets.darkerBlueColor);
+            int levelState = game.prefs.getInteger("lv"+levelButtons.indexOf(cb));
+            if(levelState==LEVELSTATE_UNLOCKED) {
+                levelButtonsFont.setColor(Color.WHITE);
+            }
             String text = Integer.toString(levelButtons.indexOf(cb)+1);
             glyphLayout.setText(levelButtonsFont, text);
             Assets.fontTibitto50.draw(game.batch, text, cb.pos.x-glyphLayout.width/2, cb.pos.y+glyphLayout.height/2);
@@ -94,6 +135,7 @@ public class LevelListScreen implements Screen {
         bigCircle.arect.height = bigCircle.arect.width;
         bigCircle.render(game.batch);
         if(bigCircle.arect.height.get()>=5000 && level!=0) {
+            game.batch.setColor(Color.WHITE);
             game.setScreen(new PlayScreen(game, level));
         }
 
@@ -106,7 +148,8 @@ public class LevelListScreen implements Screen {
         game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
         for(CircleButton cb : levelButtons) {
             cb.update(touchPos);
-            if (cb.justClicked()) {
+            int levelState = game.prefs.getInteger("lv"+levelButtons.indexOf(cb));
+            if (cb.justClicked() && levelState!=LEVELSTATE_LOCKED) {
                 bigCircle.setRect(new Rectangle(cb.pos.x, cb.pos.y, 0, 0));
                 Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width, Animations.AnimationMove.to, 5000, false, 2500, 0);
                 Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().x,Animations.AnimationMove.by,-2500, false, 2500, 0);

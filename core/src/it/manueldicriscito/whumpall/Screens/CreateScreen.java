@@ -19,12 +19,10 @@ import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Level;
 import it.manueldicriscito.whumpall.LevelRenderer;
 import it.manueldicriscito.whumpall.Platform;
+import it.manueldicriscito.whumpall.Range;
 import it.manueldicriscito.whumpall.Whumpall;
 import it.manueldicriscito.whumpall.Particles;
 
-import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_COMPLETED;
-import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_LOCKED;
-import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
@@ -34,7 +32,7 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 
 
-public class PlayScreen implements Screen, InputProcessor {
+public class CreateScreen implements Screen, InputProcessor {
     public static final int GAME_START = 0;
     public static final int GAME_PAUSE = 1;
     public static final int GAME_PLAY = 2;
@@ -42,8 +40,8 @@ public class PlayScreen implements Screen, InputProcessor {
 
 
     private int gameState;
-    private boolean tap = false;
-    private int lv;
+    boolean tap = false;
+    int lv;
 
     private Whumpall game;
     private GlyphLayout glyphLayout = new GlyphLayout();
@@ -64,7 +62,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
     private Vector3 touchPos = new Vector3();
 
-    public PlayScreen(Whumpall game, int lv) {
+    public CreateScreen(Whumpall game, int lv) {
         this.game = game;
         Gdx.input.setInputProcessor(this);
 
@@ -91,33 +89,22 @@ public class PlayScreen implements Screen, InputProcessor {
         backButton = new CircleButton();
         backButton.texture = Assets.backButtonTexture;
         backButton.color = new Animations.AnimatableColor(Assets.lightBlueColor);
-        backButton.defaultColor.set(Assets.lightBlueColor);
-        backButton.shadowColor.set(Assets.darkerBlueColor);
-        backButton.tapColor.set(Assets.lightBlueColor);
         backButton.size.set(0);
-        backButton.dSize = 100;
-        backButton.hSize = 110;
         backButton.textureSize = 100;
         backButton.pos = new Vector2(1080f/4-50, 500);
-
         nextButton = new CircleButton();
         nextButton.texture = Assets.nextButtonTexture;
         nextButton.color = new Animations.AnimatableColor(Assets.greenColor);
         nextButton.size.set(0);
         nextButton.textureSize = 150;
         nextButton.pos = new Vector2(1080f/2, 600);
-
         retryButton = new CircleButton();
         retryButton.texture = Assets.retryButtonTexture;
         retryButton.color = new Animations.AnimatableColor(Assets.fuchsiaColor);
-        retryButton.defaultColor.set(Assets.fuchsiaColor);
-        retryButton.shadowColor.set(Assets.darkerBlueColor);
-        retryButton.tapColor.set(Assets.fuchsiaColor);
         retryButton.size.set(0);
-        retryButton.dSize = 100;
-        retryButton.hSize = 110;
         retryButton.textureSize = 100;
         retryButton.pos = new Vector2(1080f/4*3+50, 500);
+
     }
 
     @Override
@@ -218,30 +205,6 @@ public class PlayScreen implements Screen, InputProcessor {
     private void update(float delta) {
         level.update(delta, game.cam);
         //begin
-        game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-        retryButton.update(touchPos);
-        backButton.update(touchPos);
-        nextButton.update(touchPos);
-        if(backButton.justClicked()) {
-            game.setScreen(new LevelListScreen(game));
-        }
-        if(retryButton.justClicked()) {
-            level.generateLevel(lv);
-            gameState = GAME_START;
-            level.gameState = GAME_START;
-            level.player.pause();
-            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width,Animations.AnimationMove.to,0, false, 1000, 0);
-            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force, bigCircle.getAnimatableRect().x,Animations.AnimationMove.to,level.player.pos.x, false, 1000, 0);
-            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.to,level.player.pos.y, false, 1000, 0);
-            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelLevelCompletedAlpha,Animations.AnimationMove.to, 0, false, 200, 0);
-            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelAttemptsAlpha,Animations.AnimationMove.to,0, false, 200, 0);
-            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelBlocksPlacedAlpha,Animations.AnimationMove.to, 0, false, 200, 0);
-            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelTotalBlocksWidthAlpha,Animations.AnimationMove.to,0, false, 200, 0);
-            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, retryButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
-            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, backButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
-            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, nextButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
-            level.showTapToStart();
-        }
         Animations.run();
         if (gameState != GAME_FINISH) {
             if (level.gameState == GAME_FINISH) {
@@ -257,11 +220,7 @@ public class PlayScreen implements Screen, InputProcessor {
                 Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelAttemptsAlpha,Animations.AnimationMove.to,1, false, 300, 1500);
                 Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelBlocksPlacedAlpha,Animations.AnimationMove.to,1, false, 300, 1700);
                 Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelTotalBlocksWidthAlpha,Animations.AnimationMove.to,1, false, 300, 1900);
-
-                game.prefs.putInteger("lv"+(lv-1), LEVELSTATE_COMPLETED);
-                if(game.prefs.getInteger("lv"+(lv))==LEVELSTATE_LOCKED) {
-                    game.prefs.putInteger("lv"+(lv), LEVELSTATE_UNLOCKED);
-                }
+                game.prefs.putBoolean("lv"+(lv-1), true);
                 game.prefs.flush();
             }
         }
@@ -273,7 +232,29 @@ public class PlayScreen implements Screen, InputProcessor {
                 level.gameState = GAME_PLAY;
                 level.player.resume();
             } else if(gameState==GAME_FINISH) {
+                game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                retryButton.update(touchPos);
+                backButton.update(touchPos);
+                nextButton.update(touchPos);
+                if(backButton.justClicked()) {
+                    game.setScreen(new LevelListScreen(game));
+                }
+                /*
+                if(retryButton.hover((int)touchPos.x, (int)touchPos.y)) {
+                    Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,retryButton.size,Animations.AnimationMove.to,110f, false, 200, 0);
+                    retryButton.tap = true;
+                }
+                if(backButton.hover((int)touchPos.x, (int)touchPos.y)) {
+                    Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,backButton.size,Animations.AnimationMove.to,110f, false, 200, 0);
+                    backButton.tap = true;
+                }
+                if(nextButton.hover((int)touchPos.x, (int)touchPos.y)) {
+                    Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,nextButton.size,Animations.AnimationMove.to,165f, false, 200, 0);
+                    nextButton.tap = true;
+                }
+                */
             } else {
+                game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 if(level.pads.size()<level.maxPads && level.getManaUsed()<level.maxMana) {
                     Platform p = new Platform();
                     p.rect.set(new Rectangle(touchPos.x, touchPos.y-20, 0, 40));
@@ -287,6 +268,7 @@ public class PlayScreen implements Screen, InputProcessor {
                 }
             }
         } else if (Gdx.input.isTouched()) {
+            game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             if (level.addingPad && level.pads.size() > 0) {
                 Platform p = level.pads.get(level.pads.size()-1);
                 if(!p.added) {
@@ -299,6 +281,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
             }
         } else if (level.addingPad) {
+            game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             level.addingPad = false;
 
             Platform p = level.pads.get(level.pads.size()-1);
@@ -309,11 +292,39 @@ public class PlayScreen implements Screen, InputProcessor {
             }
         } else if(tap) {
             // Mouse Leave
+
+            if(nextButton.tap) {
+                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back, Animations.AnimationAction.force, nextButton.size, Animations.AnimationMove.to,150f, false, 200, 0);
+                nextButton.tap = false;
+            }
+            if(backButton.tap) {
+                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,backButton.size,Animations.AnimationMove.to,100f, false, 200, 0);
+                backButton.tap = false;
+            }
+            if(retryButton.tap) {
+                if(retryButton.hover((int)touchPos.x, (int)touchPos.y)) {
+                    level.generateLevel(lv);
+                    gameState = GAME_START;
+                    level.gameState = GAME_START;
+                    level.player.pause();
+                    Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width,Animations.AnimationMove.to,0, false, 1000, 0);
+                    Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force, bigCircle.getAnimatableRect().x,Animations.AnimationMove.to,level.player.pos.x, false, 1000, 0);
+                    Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.to,level.player.pos.y, false, 1000, 0);
+                    Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelLevelCompletedAlpha,Animations.AnimationMove.to, 0, false, 200, 0);
+                    Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelAttemptsAlpha,Animations.AnimationMove.to,0, false, 200, 0);
+                    Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelBlocksPlacedAlpha,Animations.AnimationMove.to, 0, false, 200, 0);
+                    Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelTotalBlocksWidthAlpha,Animations.AnimationMove.to,0, false, 200, 0);
+
+                    Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, retryButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
+                    Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, backButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
+                    Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, nextButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
+                    level.showTapToStart();
+                } else Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,retryButton.size,Animations.AnimationMove.to,100f, false, 200, 0);
+                retryButton.tap = false;
+            }
             tap = false;
         }
         //end
-
-        // camera control
         if(level.player.pos.x>=lr.minX+540 && level.player.pos.x<=lr.maxX-540) game.cam.position.x = level.player.pos.x;
         if(level.player.pos.x<lr.minX+540) game.cam.position.x = lr.minX+540;
         if(level.player.pos.x>lr.maxX-540) game.cam.position.x = lr.maxX-540;
@@ -390,3 +401,4 @@ public class PlayScreen implements Screen, InputProcessor {
         return false;
     }
 }
+

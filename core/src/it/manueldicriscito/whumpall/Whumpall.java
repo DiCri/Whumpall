@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +27,11 @@ import it.manueldicriscito.whumpall.Screens.LevelListScreen;
 import it.manueldicriscito.whumpall.Screens.PlayScreen;
 
 public class Whumpall extends Game {
+
+	public static final int LEVELSTATE_LOCKED = 0;
+	public static final int LEVELSTATE_UNLOCKED = 1;
+	public static final int LEVELSTATE_COMPLETED = 2;
+
 	public static final int V_WIDTH = 1080;
 	public static final int V_HEIGHT = 1920;
 
@@ -45,6 +51,7 @@ public class Whumpall extends Game {
 	public OrthographicCamera cam;
 	public Viewport port;
 	public ShapeRenderer sr;
+	public Preferences prefs;
 
 	public static Map<String, Object> globalVars = new HashMap<String, Object>();
 
@@ -100,12 +107,13 @@ public class Whumpall extends Game {
 		cam = new OrthographicCamera(1080, 1920);
 		port = new ExtendViewport(1080, 1920, cam);
 		port.apply(true);
+		prefs = Gdx.app.getPreferences("levels");
 
 		timer = new DiCriTimer();
 
 		Assets.load();
 
-		//setScreen(new PlayScreen(this));
+		//setScreen(new PlayScreen(this, 1));
 		setScreen(new LevelListScreen(this));
 	}
 

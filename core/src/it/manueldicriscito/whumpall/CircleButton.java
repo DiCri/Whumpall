@@ -32,9 +32,9 @@ public class CircleButton {
         pos = new Vector2(0, 0);
         textureSize = 50;
         color = new Animations.AnimatableColor(Color.WHITE);
-        defaultColor = Color.WHITE;
-        shadowColor = Color.BLACK;
-        tapColor = Color.WHITE;
+        defaultColor = new Color(Color.WHITE);
+        shadowColor = new Color(Color.BLACK);
+        tapColor = new Color(Color.WHITE);
         size = new Animations.AnimatableFloat(50);
         dSize = 50;
         hSize = 70;
@@ -57,7 +57,7 @@ public class CircleButton {
     }
     public void drawTexture(SpriteBatch batch) {
         if(texture!=null) {
-            int rad = (int)textureSize/2;
+            int rad = textureSize/2;
             batch.setColor(Assets.darkerBlueColor);
             batch.draw(texture, pos.x-rad+3, pos.y-rad-5, rad*2, rad*2);
             batch.setColor(Color.WHITE);

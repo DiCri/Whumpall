@@ -165,9 +165,9 @@ public class LevelRenderer {
                 level.player.size);
         batch.end();
         sr.begin(ShapeRenderer.ShapeType.Filled);
-        sr.setColor(Color.BLACK);
         gunPos.x = (float)(Math.cos(Math.toRadians(gunRotation+30))*20-Math.sin(Math.toRadians(gunRotation+30))*20+level.player.pos.x);
         gunPos.y = (float)(Math.sin(Math.toRadians(gunRotation+30))*20+Math.cos(Math.toRadians(gunRotation+30))*20+level.player.pos.y);
+        sr.setColor(Assets.darkerBlueColor);
         sr.ellipse(level.player.pos.x-5-2+level.player.vel.x*5/300, level.player.pos.y-7+level.player.vel.y*20/(level.player.j*2), 6, 15-(15-playerEyes.get()));
         sr.ellipse(level.player.pos.x+2+level.player.vel.x*5/300, level.player.pos.y-7+level.player.vel.y*20/(level.player.j*2), 6, 15-(15-playerEyes.get()));
         if(Math.random()*1000<5) {

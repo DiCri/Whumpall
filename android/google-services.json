@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "586251054560",
+    "firebase_url": "https://whumpall.firebaseio.com",
+    "project_id": "whumpall",
+    "storage_bucket": "whumpall.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586251054560:android:e97bbc1d6e180319c84f85",
+        "android_client_info": {
+          "package_name": "it.manueldicriscito.whumpall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "586251054560-mcuak5cqhbjlp9da17lavud5r4por0s0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.manueldicriscito.whumpall",
+            "certificate_hash": "f6e7338c0b40bdcbfcaa48d8a3e7de7ff4fd6297"
+          }
+        },
+        {
+          "client_id": "586251054560-6la7t8g4d78f6q2fnecusmo34g6tqc82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcguqFPNpB23VkWFm3O8B4J3mHF5yzsZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "586251054560-6la7t8g4d78f6q2fnecusmo34g6tqc82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
