@@ -115,7 +115,7 @@ public class Whumpall extends Game {
 	@Override
 	public void dispose() {
 		batch.dispose();
-		//Assets.dispose();
+		Assets.dispose();
 	}
 
 }

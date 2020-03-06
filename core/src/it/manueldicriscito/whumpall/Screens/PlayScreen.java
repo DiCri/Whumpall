@@ -193,7 +193,7 @@ public class PlayScreen implements Screen, InputProcessor {
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
         game.sr.setColor(Color.WHITE);
 
-        game.sr.rect(getScreenLeft(game.cam)+20+11, getScreenTop(game.cam)-160+43, 90-(90f*level.getManaUsed()/level.maxMana), 43);
+        game.sr.rect(getScreenLeft(game.cam)+20+11, getScreenTop(game.cam)-160+43, 90-(90f*level.totalBlocksWidth.get()/level.maxMana), 43);
         game.sr.end();
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");
@@ -245,7 +245,7 @@ public class PlayScreen implements Screen, InputProcessor {
                 }
             } else {
                 game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                if(level.pads.size()<level.maxPads) {
+                if(level.pads.size()<level.maxPads && level.getManaUsed()<level.maxMana) {
                     Platform p = new Platform();
                     p.rect.set(new Rectangle(touchPos.x, touchPos.y-20, 0, 40));
                     p.type = PAD_TYPE_HORIZONTAL;
@@ -262,8 +262,13 @@ public class PlayScreen implements Screen, InputProcessor {
             if (level.addingPad && level.pads.size() > 0) {
                 Platform p = level.pads.get(level.pads.size()-1);
                 if(!p.added) {
+                    float addedBlocksMana = (float)globalVars.get("addedBlocksMana");
                     p.rect.setWidth(touchPos.x - p.rect.x);
+                    if(level.getManaUsed()>level.maxMana) {
+                        p.rect.setWidth((level.maxMana-addedBlocksMana)*(p.rect.width>=0?1:-1));
+                    }
                 }
+
             }
         } else if (level.addingPad) {
             game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));

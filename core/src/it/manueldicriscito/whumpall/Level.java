@@ -71,6 +71,7 @@ public class Level {
         gsTimer.start();
 
         globalVars.put("lastTapTime", System.currentTimeMillis());
+        globalVars.put("addedBlocksMana", 0f);
 
 
         generateLevel(currentLevel);
@@ -127,7 +128,10 @@ public class Level {
         totalBlocksWidth.set(0);
         for(Platform p : pads) {
             p.update(delta);
-            totalBlocksWidth.add(p.rect.width);
+            totalBlocksWidth.add(Math.abs(p.rect.width));
+            if(pads.indexOf(p)!=pads.size()-1) {
+                globalVars.put("addedBlocksMana", totalBlocksWidth.get());
+            }
         }
         for(Platform p : lpads) p.update(delta);
     }
@@ -293,7 +297,7 @@ public class Level {
     public int getManaUsed() {
         int manaUsed = 0;
         for(Platform p : pads) {
-            manaUsed += p.rect.width;
+            manaUsed += Math.abs(p.rect.width);
         }
         return manaUsed;
     }
