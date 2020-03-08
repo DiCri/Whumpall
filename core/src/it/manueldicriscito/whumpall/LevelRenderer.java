@@ -13,6 +13,8 @@ import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.getAngle;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
+import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
+import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 
@@ -61,8 +63,8 @@ public class LevelRenderer {
         Color darkColor = Assets.darkLightBlueColor;
 
         sr.setColor(mainColor);
-        sr.rect(minX, getScreenBottom(cam), maxX-minX, getScreenTop(cam)-getScreenBottom(cam));
-        sr.rect(minX, getScreenBottom(cam), maxX-minX, 1920f/3, darkColor, darkColor, mainColor, mainColor);
+        sr.rect(getScreenLeft(cam), getScreenBottom(cam), getScreenRight(cam)-getScreenLeft(cam), getScreenTop(cam)-getScreenBottom(cam));
+        sr.rect(getScreenLeft(cam), getScreenBottom(cam), getScreenRight(cam)-getScreenLeft(cam), 1920f/3, darkColor, darkColor, mainColor, mainColor);
         this.sr.end();
     }
     private void renderObjects() {
@@ -72,7 +74,7 @@ public class LevelRenderer {
             psize += p.added?1:0;
         }
         Assets.fontKoHoBold50.setColor(1, 1, 1, 1);
-        Assets.fontKoHoBold50.draw(batch, ""+(level.maxPads-psize), 1080-180+cam.position.x-540, 100);
+        Assets.fontKoHoBold50.draw(batch, ""+(level.maxPads-psize), getScreenRight(cam)-180, getScreenBottom(cam)+100);
         batch.end();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
@@ -123,9 +125,9 @@ public class LevelRenderer {
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
         sr.setColor(Assets.darkBlueColor);
-        sr.rect(cam.position.x-540+1080-120, 40, 80, 40);
+        sr.rect(getScreenRight(cam)-120, getScreenBottom(cam)+40, 80, 40);
         sr.setColor(Assets.darkerBlueColor);
-        sr.rect(cam.position.x-540+1080-120, 80, 80, 40);
+        sr.rect(getScreenRight(cam)-120, getScreenBottom(cam)+80, 80, 40);
         sr.end();
     }
     private void renderPlayerGuide() {

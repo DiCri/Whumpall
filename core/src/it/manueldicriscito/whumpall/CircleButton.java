@@ -27,7 +27,24 @@ public class CircleButton {
     public boolean holdDown; // if the button is hold down at the moment
     boolean selected;
     boolean hasShadow;
+    boolean jTouch = false;
 
+    public CircleButton(CircleButton cb) {
+        this.size = new Animations.AnimatableFloat(cb.size.get());
+        this.color = new Animations.AnimatableColor(cb.color.get());
+        this.defaultColor = cb.defaultColor;
+        this.shadowColor = cb.shadowColor;
+        this.tapColor = cb.tapColor;
+        this.pos = new Vector2(cb.pos);
+        this.texture = cb.texture;
+        this.textureRotation = cb.textureRotation;
+        this.textureSize = cb.textureSize;
+        this.tap = cb.tap;
+        this.dSize = cb.dSize;
+        this.hSize= cb.hSize;
+        this.holdDown = cb.holdDown;
+        this.hasShadow = cb.hasShadow;
+    }
     public CircleButton() {
         pos = new Vector2(0, 0);
         textureSize = 50;
@@ -73,6 +90,7 @@ public class CircleButton {
         Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Back, Animations.AnimationAction.force, color.g, Animations.AnimationMove.to, tapColor.g, false, 200, 0);
         Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Back, Animations.AnimationAction.force, color.b, Animations.AnimationMove.to, tapColor.b, false, 200, 0);
         tap = true;
+        jTouch = true;
         if(holdDown) selected = !selected;
     }
     public void deselect() {
@@ -84,6 +102,7 @@ public class CircleButton {
     }
     public void update(Vector3 touchPos) {
         clicked = false;
+        jTouch = false;
         if (Gdx.input.justTouched()) {
             if (hover((int) touchPos.x, (int) touchPos.y)) {
                 select();
@@ -95,12 +114,17 @@ public class CircleButton {
             if(!selected) deselect();
             if(hover((int)touchPos.x, (int)touchPos.y)) {
                 clicked = true;
+            } else {
+                deselect();
             }
         }
     }
     public boolean isSelected() { return selected; }
     public boolean justClicked() {
         return clicked;
+    }
+    public boolean justTouched() {
+        return jTouch;
     }
 }
 

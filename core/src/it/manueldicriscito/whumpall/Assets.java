@@ -26,6 +26,10 @@ public class Assets {
     public static Texture nextButtonTexture;
     public static Texture playButtonTexture;
     public static Texture backButtonTexture;
+    public static Texture editButtonTexture;
+    public static Texture deleteButtonTexture;
+    public static Texture moveButtonTexture;
+    public static Texture finalButtonTexture;
     public static Texture wipTexture;
     public static Texture titleTopTexture;
     public static Texture titleBottomTexture;
@@ -72,6 +76,10 @@ public class Assets {
         playButtonTexture = loadTexture("play.png");
         nextButtonTexture = loadTexture("play.png");
         backButtonTexture = loadTexture("list.png");
+        editButtonTexture = loadTexture("edit-option.png");
+        deleteButtonTexture = loadTexture("delete_option.png");
+        moveButtonTexture = loadTexture("move_option.png");
+        finalButtonTexture = loadTexture("final-option.png");
         titleTopTexture = loadTexture("title_top.png");
         titleBottomTexture = loadTexture("title_bottom.png");
         titleShadowTexture = loadTexture("title_shadow.png");

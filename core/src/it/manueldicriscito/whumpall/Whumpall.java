@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import it.manueldicriscito.whumpall.Screens.CreateScreen;
 import it.manueldicriscito.whumpall.Screens.LevelListScreen;
 import it.manueldicriscito.whumpall.Screens.PlayScreen;
 
@@ -38,7 +39,7 @@ public class Whumpall extends Game {
 	public static final int PAD_DIR_NONE = 0;
 	public static final int PAD_DIR_RIGHT = 1;
 	public static final int PAD_DIR_LEFT = 2;
-	static final int PAD_DIR_FINISH = 3;
+	public static final int PAD_DIR_FINISH = 3;
 
 	public static final int PAD_TYPE_HORIZONTAL = 0;
 	public static final int PAD_TYPE_VERTICAL = 1;
@@ -115,6 +116,7 @@ public class Whumpall extends Game {
 
 		//setScreen(new PlayScreen(this, 1));
 		setScreen(new LevelListScreen(this));
+		setScreen(new CreateScreen(this, -1));
 	}
 
 	@Override

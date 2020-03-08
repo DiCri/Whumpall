@@ -225,6 +225,16 @@ public class Level {
         pads.clear();
         respawnPlayer();
         respawnPlayerGuide();
+        if(level==-1) {
+            initPos.x = 100;
+            initPos.y = 1220;
+            initJump = 750;
+            initGrav = 1500;
+            initSpeed.x = 300;
+            initSpeed.y = -50;
+            maxMana = 200;
+            maxPads = 1;
+        }
         if(level==1) {
             Platform new_pad;
             GravityZone new_gzone;
