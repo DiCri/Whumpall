@@ -196,23 +196,24 @@ public class LevelRenderer {
     private void renderPad(Platform p) {
         if(p.dir==PAD_DIR_NONE) {
             sr.setColor(Assets.darkBlueColor.r, Assets.darkBlueColor.g, Assets.darkBlueColor.b, p.added?1f:0.75f);
-            sr.rect(p.rect.x+p.offset.x, p.rect.y+p.offset.y, p.rect.width, p.rect.height);
+            sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
             if(p.fixed && p.added) {
                 sr.setColor(Assets.darkerBlueColor);
-                sr.rect(p.rect.x+p.offset.x, p.rect.y + p.rect.height / 2+p.offset.y, p.rect.width, p.rect.height / 2);
+                sr.rect(p.rect.x, p.rect.y + p.rect.height / 2, p.rect.width, p.rect.height / 2);
             }
         } else if(p.dir==PAD_DIR_FINISH) {
             sr.setColor(Assets.shadowColor);
-            sr.rect(p.rect.x+p.offset.x, p.rect.y+p.offset.y, p.rect.width, p.rect.height);
+            sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
         }
-        sr.rect(p.rect.x+p.offset.x, p.rect.y-20+p.offset.y, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.playerShadowColor, Assets.playerShadowColor);
+        sr.rect(p.rect.x, p.rect.y-20, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.playerShadowColor, Assets.playerShadowColor);
+        /*
         if(p.hasShield) {
             sr.setColor(Color.WHITE);
             sr.rectLine(p.rect.x, p.rect.y, p.rect.x, p.rect.y+p.rect.height, 5);
             sr.rectLine(p.rect.x, p.rect.y+p.rect.height, p.rect.x+p.rect.width, p.rect.y+p.rect.height, 5);
             sr.rectLine(p.rect.x+p.rect.width, p.rect.y+p.rect.height, p.rect.x+p.rect.width, p.rect.y, 5);
             sr.rectLine(p.rect.x+p.rect.width, p.rect.y, p.rect.x, p.rect.y, 5);
-        }
+        }*/
     }
     private void renderPads() {
         Gdx.gl.glEnable(GL20.GL_BLEND);

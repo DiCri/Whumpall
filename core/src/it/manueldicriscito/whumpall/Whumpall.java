@@ -115,8 +115,8 @@ public class Whumpall extends Game {
 		Assets.load();
 
 		//setScreen(new PlayScreen(this, 1));
-		setScreen(new LevelListScreen(this));
-		setScreen(new CreateScreen(this, -1));
+		//setScreen(new LevelListScreen(this));
+		setScreen(new CreateScreen(this));
 	}
 
 	@Override

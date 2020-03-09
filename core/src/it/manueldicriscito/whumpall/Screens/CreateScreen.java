@@ -3,6 +3,7 @@ package it.manueldicriscito.whumpall.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -21,6 +22,7 @@ import java.util.Set;
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
+import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.DiCriTimer;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Level;
@@ -74,11 +76,19 @@ public class CreateScreen implements Screen, InputProcessor {
 
     Map<String, CircleButton> cbtn = new HashMap<>();
 
-    public CreateScreen(Whumpall game, int lv) {
+    public CreateScreen(Whumpall game, LevelData levelData) {
+        this(game);
+        this.level = new Level(levelData);
+        lr = new LevelRenderer(game, this.level);
+        this.level.gsTimer = gsTimer;
+        gsTimer.start();
+    }
+
+    public CreateScreen(Whumpall game) {
         this.game = game;
         Gdx.input.setInputProcessor(this);
 
-        this.lv = lv;
+        this.lv = -1;
         this.level = new Level(lv);
         lr = new LevelRenderer(game, this.level);
 
@@ -225,6 +235,9 @@ public class CreateScreen implements Screen, InputProcessor {
                         if(!antry.getKey().equals(entry.getKey())) antry.getValue().deselect();
                     }
                 } else editorMode = -1;
+                if(entry.getKey().equals("play")) {
+                    game.setScreen(new PlayScreen(game, -1, new Level(new LevelData(level))));
+                }
             } else {
             }
             btnTouch |= entry.getValue().justTouched();

@@ -12,9 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Particles {
-    public class Generator {
-
-    }
     public static class Particle {
         Vector2 pos;
         float width, widthChange;

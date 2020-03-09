@@ -9,6 +9,9 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.manueldicriscito.whumpall.Data.LevelData;
+import it.manueldicriscito.whumpall.Data.PlatformData;
+
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_FINISH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_PLAY;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
@@ -24,10 +27,10 @@ public class Level {
     public final List<Platform> lpads;
     public final List<Platform> pads;
     public final List<GravityZone> gzones;
-    private Vector2 initPos;
-    private Vector2 initSpeed;
-    private int initJump;
-    private int initGrav;
+    public Vector2 initPos;
+    public Vector2 initSpeed;
+    public int initJump;
+    public int initGrav;
     public int maxPads;
     public int maxMana;
     public int attempts;
@@ -36,6 +39,7 @@ public class Level {
     public DiCriTimer timer;
     public DiCriTimer gsTimer;
     public Animations.AnimatableFloat totalBlocksWidth;
+    public LevelData levelData;
 
 
     Vector3 touchPos;
@@ -45,6 +49,35 @@ public class Level {
 
     public boolean addingPad;
 
+    public void resetLevel() {
+        lpads.clear();
+        pads.clear();
+        respawnPlayer();
+        respawnPlayerGuide();
+        initPos.set(levelData.initPos);
+        initSpeed.set(levelData.initSpeed);
+        initJump = levelData.initJump;
+        initGrav = levelData.initGrav;
+        maxMana = levelData.maxMana;
+        maxPads = levelData.maxPads;
+        for(PlatformData pd : levelData.lpads) {
+            Platform new_pad = new Platform();
+            new_pad.rect.set(pd.rect);
+            new_pad.fixed = pd.fixed;
+            new_pad.dir = pd.dir;
+            new_pad.add();
+            lpads.add(new_pad);
+        }
+    }
+
+    public void generateLevel(LevelData levelData) {
+        this.levelData = levelData;
+        resetLevel();
+    }
+    public Level(LevelData levelData) {
+        this(-1);
+        generateLevel(levelData);
+    }
     public Level(int currentLevel) {
         this.currentLevel = currentLevel;
         player = new Player();
@@ -72,7 +105,6 @@ public class Level {
 
         globalVars.put("lastTapTime", System.currentTimeMillis());
         globalVars.put("addedBlocksMana", 0f);
-
 
         generateLevel(currentLevel);
         respawnPlayer();

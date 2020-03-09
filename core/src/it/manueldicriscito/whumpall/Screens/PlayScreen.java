@@ -3,6 +3,7 @@ package it.manueldicriscito.whumpall.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -10,7 +11,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Json;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import it.manueldicriscito.whumpall.AnimationTypes.Circ;
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
@@ -58,18 +64,23 @@ public class PlayScreen implements Screen, InputProcessor {
     private Animations.AnimatableFloat labelBlocksPlacedAlpha = new Animations.AnimatableFloat(0);
     private Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
 
-    private CircleButton backButton;
-    private CircleButton nextButton;
-    private CircleButton retryButton;
+    Map<String, CircleButton> cbtn = new HashMap<>();
 
     private Vector3 touchPos = new Vector3();
 
     public PlayScreen(Whumpall game, int lv) {
+        this(game, lv, null);
+    }
+    public PlayScreen(Whumpall game, int lv, Level level) {
         this.game = game;
         Gdx.input.setInputProcessor(this);
 
         this.lv = lv;
-        this.level = new Level(lv);
+        if(level==null) {
+            this.level = new Level(lv);
+        } else {
+            this.level = level;
+        }
         lr = new LevelRenderer(game, this.level);
 
         gsTimer = new DiCriTimer();
@@ -88,36 +99,40 @@ public class PlayScreen implements Screen, InputProcessor {
         Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.to,this.level.player.pos.y, false, 1500, 0);
         level.showTapToStart();
 
-        backButton = new CircleButton();
-        backButton.texture = Assets.backButtonTexture;
-        backButton.color = new Animations.AnimatableColor(Assets.lightBlueColor);
-        backButton.defaultColor.set(Assets.lightBlueColor);
-        backButton.shadowColor.set(Assets.darkerBlueColor);
-        backButton.tapColor.set(Assets.lightBlueColor);
-        backButton.size.set(0);
-        backButton.dSize = 100;
-        backButton.hSize = 110;
-        backButton.textureSize = 100;
-        backButton.pos = new Vector2(1080f/4-50, 500);
-
-        nextButton = new CircleButton();
-        nextButton.texture = Assets.nextButtonTexture;
-        nextButton.color = new Animations.AnimatableColor(Assets.greenColor);
-        nextButton.size.set(0);
-        nextButton.textureSize = 150;
-        nextButton.pos = new Vector2(1080f/2, 600);
-
-        retryButton = new CircleButton();
-        retryButton.texture = Assets.retryButtonTexture;
-        retryButton.color = new Animations.AnimatableColor(Assets.fuchsiaColor);
-        retryButton.defaultColor.set(Assets.fuchsiaColor);
-        retryButton.shadowColor.set(Assets.darkerBlueColor);
-        retryButton.tapColor.set(Assets.fuchsiaColor);
-        retryButton.size.set(0);
-        retryButton.dSize = 100;
-        retryButton.hSize = 110;
-        retryButton.textureSize = 100;
-        retryButton.pos = new Vector2(1080f/4*3+50, 500);
+        CircleButton cb = new CircleButton();
+        cb.texture = Assets.backButtonTexture;
+        cb.color = new Animations.AnimatableColor(Assets.lightBlueColor);
+        cb.defaultColor.set(Assets.lightBlueColor);
+        cb.shadowColor.set(Assets.darkerBlueColor);
+        cb.tapColor.set(Assets.lightBlueColor);
+        cb.size.set(0);
+        cb.dSize = 100;
+        cb.hSize = 110;
+        cb.textureSize = 100;
+        cb.pos = new Vector2(1080f/4-50, 500);
+        cbtn.put("back", new CircleButton(cb));
+        cb.texture = Assets.retryButtonTexture;
+        cb.color = new Animations.AnimatableColor(Assets.fuchsiaColor);
+        cb.defaultColor.set(Assets.fuchsiaColor);
+        cb.tapColor.set(Assets.fuchsiaColor);
+        cb.pos = new Vector2(1080f/4*3+50, 500);
+        cbtn.put("retry", new CircleButton(cb));
+        cb.texture = Assets.nextButtonTexture;
+        cb.color = new Animations.AnimatableColor(Assets.greenColor);
+        cb.textureSize = 150;
+        cb.pos = new Vector2(1080f/2, 600);
+        cbtn.put("next", new CircleButton(cb));
+        cb.texture = Assets.editButtonTexture;
+        cb.pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
+        cb.size.set(70);
+        cb.dSize = 70;
+        cb.hSize = 80;
+        cb.color.set(Assets.darkBlueColor);
+        cb.shadowColor.set(Color.WHITE);
+        cb.defaultColor.set(Assets.darkBlueColor);
+        cb.tapColor.set(Assets.darkerBlueColor);
+        cb.textureSize = 70;
+        cbtn.put("edit", new CircleButton(cb));
     }
 
     @Override
@@ -142,17 +157,25 @@ public class PlayScreen implements Screen, InputProcessor {
         bigCircle.arect.height = bigCircle.arect.width;
         bigCircle.render(game.batch);
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
-        if(bigCircle.arect.getWidth()>1920) {
-            backButton.drawCircle(game.sr);
-            nextButton.drawCircle(game.sr);
-            retryButton.drawCircle(game.sr);
+        for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
+            if(entry.getKey().equals("back")
+                || entry.getKey().equals("next")
+                || entry.getKey().equals("retry")) {
+                if(bigCircle.arect.getWidth()>1920) entry.getValue().drawCircle(game.sr);
+            } else {
+                entry.getValue().drawCircle(game.sr);
+            }
         }
         game.sr.end();
         game.batch.begin();
-        if(bigCircle.arect.getWidth()>1920 && gameState == GAME_FINISH) {
-            backButton.drawTexture(game.batch);
-            nextButton.drawTexture(game.batch);
-            retryButton.drawTexture(game.batch);
+        for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
+            if(entry.getKey().equals("back")
+                    || entry.getKey().equals("next")
+                    || entry.getKey().equals("retry")) {
+                if(bigCircle.arect.getWidth()>1920) entry.getValue().drawTexture(game.batch);
+            } else {
+                entry.getValue().drawTexture(game.batch);
+            }
         }
         glyphLayout.setText(Assets.fontKoHoRegular100, "Level " + level.currentLevel + " Completed");
         Assets.fontKoHoRegular100.setColor(0, 0, 0, labelLevelCompletedAlpha.get());
@@ -219,13 +242,12 @@ public class PlayScreen implements Screen, InputProcessor {
         level.update(delta, game.cam);
         //begin
         game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-        retryButton.update(touchPos);
-        backButton.update(touchPos);
-        nextButton.update(touchPos);
-        if(backButton.justClicked()) {
-            game.setScreen(new LevelListScreen(game));
+        for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
+            entry.getValue().update(touchPos);
         }
-        if(retryButton.justClicked()) {
+        if(cbtn.get("back").justClicked()) game.setScreen(new LevelListScreen(game));
+        if(cbtn.get("edit").justClicked()) game.setScreen(new CreateScreen(game, level.levelData));
+        if(cbtn.get("retry").justClicked()) {
             level.generateLevel(lv);
             gameState = GAME_START;
             level.gameState = GAME_START;
@@ -237,18 +259,18 @@ public class PlayScreen implements Screen, InputProcessor {
             Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelAttemptsAlpha,Animations.AnimationMove.to,0, false, 200, 0);
             Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelBlocksPlacedAlpha,Animations.AnimationMove.to, 0, false, 200, 0);
             Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelTotalBlocksWidthAlpha,Animations.AnimationMove.to,0, false, 200, 0);
-            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, retryButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
-            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, backButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
-            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, nextButton.size, Animations.AnimationMove.to,0f, false, 400, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, cbtn.get("retry").size, Animations.AnimationMove.to,0f, false, 400, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, cbtn.get("back").size, Animations.AnimationMove.to,0f, false, 400, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Sine, Animations.AnimationAction.force, cbtn.get("next").size, Animations.AnimationMove.to,0f, false, 400, 0);
             level.showTapToStart();
         }
         Animations.run();
         if (gameState != GAME_FINISH) {
             if (level.gameState == GAME_FINISH) {
                 gameState = GAME_FINISH;
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,backButton.size,Animations.AnimationMove.to,100, false, 1500, 2000);
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,retryButton.size,Animations.AnimationMove.to,100, false, 1500, 2250);
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,nextButton.size,Animations.AnimationMove.to,150, false, 1500, 2500);
+                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("back").size,Animations.AnimationMove.to,100, false, 1500, 2000);
+                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("retry").size,Animations.AnimationMove.to,100, false, 1500, 2250);
+                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("next").size,Animations.AnimationMove.to,150, false, 1500, 2500);
                 bigCircle.setRect(new Rectangle(level.player.pos.x, level.player.pos.y, 0, 0));
                 Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width, Animations.AnimationMove.to, 4000, false, 1800, 0);
                 Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().x,Animations.AnimationMove.by,-2000, false, 1800, 0);

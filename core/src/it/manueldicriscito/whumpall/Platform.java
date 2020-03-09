@@ -21,10 +21,7 @@ public class Platform {
     public boolean added;
     public boolean fixed;
     private int gravity;
-    public Vector2 offset;
     public int gravityChange;
-
-    boolean hasShield;
 
 
     public Platform() {
@@ -35,12 +32,7 @@ public class Platform {
         falling = false;
         gravity = 1500;
         fixed = false;
-        offset = new Vector2(0,0);
         gravityChange = 1;
-        hasShield = false;
-    }
-    public void putShield() {
-        this.hasShield = true;
     }
     public void update(float delta) {
         if(added) {
