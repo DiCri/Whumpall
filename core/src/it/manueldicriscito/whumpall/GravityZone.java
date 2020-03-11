@@ -32,7 +32,7 @@ class GravityZone {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_ZERO, GL20.GL_ZERO);
 
-        sr.setColor(Assets.gravityZoneColor);
+        sr.setColor(Assets.Colors.get("gravityZone"));
         for (int i = 0; i < triangleIndices.size; i += 3) {
             sr.triangle(
                     vertices[triangleIndices.get(i) * 2], vertices[triangleIndices.get(i) * 2 + 1],

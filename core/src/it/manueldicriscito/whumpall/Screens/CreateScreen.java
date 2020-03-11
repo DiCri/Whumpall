@@ -1,6 +1,7 @@
 package it.manueldicriscito.whumpall.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
@@ -40,9 +41,52 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
+import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
+import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
 
 
 public class CreateScreen implements Screen, InputProcessor {
+
+    class EditMaxManaInputListener implements Input.TextInputListener {
+        @Override
+        public void input (String text) {
+            level.maxMana = Integer.parseInt(text);
+        }
+        @Override
+        public void canceled () {}
+    }
+    class EditMaxPadsInputListener implements Input.TextInputListener {
+        @Override
+        public void input(String text) {
+            level.maxPads = Integer.parseInt(text);
+        }
+        @Override
+        public void canceled() {}
+    }
+    class LoadLevelInputListener implements Input.TextInputListener {
+        @Override
+        public void input (String text) {
+            final LevelData levelData = loadLevel(text);
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    level = new Level(levelData);
+                    lr = new LevelRenderer(game, level);
+                }
+            });
+        }
+        @Override
+        public void canceled () {}
+    }
+    class SaveLevelInputListener implements Input.TextInputListener {
+        @Override
+        public void input (String text) {
+            saveLevel(text, new LevelData(level));
+        }
+        @Override
+        public void canceled () {}
+    }
+
     public static final int GAME_START = 0;
     public static final int GAME_PAUSE = 1;
     public static final int GAME_PLAY = 2;
@@ -53,6 +97,7 @@ public class CreateScreen implements Screen, InputProcessor {
     public static final int EDITOR_MOVE = 2;
     public static final int EDITOR_FINAL = 3;
     int editorMode = -1;
+    boolean movingPlayer = false;
 
 
     private int gameState;
@@ -83,8 +128,26 @@ public class CreateScreen implements Screen, InputProcessor {
         this.level.gsTimer = gsTimer;
         gsTimer.start();
     }
+    public CreateScreen(Whumpall game, LevelData levelData, String thisScreen) {
+        this(game, levelData);
+        if(!thisScreen.equals("PlayScreen")) {
+            bigCircle.setRect(new Rectangle(this.level.player.pos.x - 2000, this.level.player.pos.y - 2000, 4000, 4000));
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().width, Animations.AnimationMove.to, 0, false, 1500, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().x, Animations.AnimationMove.to, this.level.player.pos.x, false, 1500, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().y, Animations.AnimationMove.to, this.level.player.pos.y, false, 1500, 0);
+        }
+    }
+    public CreateScreen(Whumpall game, String thisScreen) {
+        this(game);
+        if(!thisScreen.equals("PlayScreen")) {
+            bigCircle.setRect(new Rectangle(this.level.player.pos.x - 2000, this.level.player.pos.y - 2000, 4000, 4000));
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().width, Animations.AnimationMove.to, 0, false, 1500, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().x, Animations.AnimationMove.to, this.level.player.pos.x, false, 1500, 0);
+            Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().y, Animations.AnimationMove.to, this.level.player.pos.y, false, 1500, 0);
+        }
+    }
 
-    public CreateScreen(Whumpall game) {
+    public CreateScreen(final Whumpall game) {
         this.game = game;
         Gdx.input.setInputProcessor(this);
 
@@ -96,43 +159,43 @@ public class CreateScreen implements Screen, InputProcessor {
         this.level.gsTimer = gsTimer;
         gsTimer.start();
 
-
-        bigCircle = new Image();
-        bigCircle.setTexture(Assets.bigCircleTexture);
-        bigCircle.setColor(new Color(1, 1, 1, 1));
-        bigCircle.makeAnimatable();
-        bigCircle.setRect(new Rectangle(this.level.player.pos.x-2000, this.level.player.pos.y-2000, 4000, 4000));
-
         CircleButton cb = new CircleButton();
         cb.pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
         cb.size.set(70);
         cb.dSize = 70;
         cb.hSize = 80;
-        cb.color.set(Assets.darkBlueColor);
+        cb.color.set(Assets.Colors.get("darkBlue"));
         cb.shadowColor.set(Color.WHITE);
-        cb.defaultColor.set(Assets.darkBlueColor);
-        cb.tapColor.set(Assets.darkerBlueColor);
-        cb.texture = Assets.playButtonTexture;
+        cb.defaultColor.set(Assets.Colors.get("darkBlue"));
+        cb.tapColor.set(Assets.Colors.get("darkerBlue"));
+        cb.texture = Assets.Textures.get("play");
         cb.textureSize = 70;
         cbtn.put("play", new CircleButton(cb));
+        cb.pos.set(getScreenRight(game.cam)-250, getScreenTop(game.cam)-100);
+        cb.texture = Assets.Textures.get("save");
+        cbtn.put("save", new CircleButton(cb));
+        cb.pos.set(getScreenRight(game.cam)-400, getScreenTop(game.cam)-100);
+        cb.texture = Assets.Textures.get("load");
+        cbtn.put("load", new CircleButton(cb));
         cb.holdDown = true;
         cb.pos.set(getScreenLeft(game.cam)+100, getScreenBottom(game.cam)+100);
-        cb.texture = Assets.editButtonTexture;
+        cb.texture = Assets.Textures.get("edit");
         cbtn.put("edit", new CircleButton(cb));
         cb.pos.set(getScreenLeft(game.cam)+250, getScreenBottom(game.cam)+100);
-        cb.texture = Assets.deleteButtonTexture;
+        cb.texture = Assets.Textures.get("delete");
         cbtn.put("delete", new CircleButton(cb));
         cb.pos.set(getScreenLeft(game.cam)+400, getScreenBottom(game.cam)+100);
-        cb.texture = Assets.moveButtonTexture;
+        cb.texture = Assets.Textures.get("move");
         cbtn.put("move", new CircleButton(cb));
         cb.pos.set(getScreenLeft(game.cam)+550, getScreenBottom(game.cam)+100);
-        cb.texture = Assets.finalButtonTexture;
+        cb.texture = Assets.Textures.get("final");
         cbtn.put("final", new CircleButton(cb));
 
-
-        Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width,Animations.AnimationMove.to,0, false, 1500, 0);
-        Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force, bigCircle.getAnimatableRect().x,Animations.AnimationMove.to,this.level.player.pos.x, false, 1500, 0);
-        Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.to,this.level.player.pos.y, false, 1500, 0);
+        bigCircle = new Image();
+        bigCircle.setTexture(Assets.Textures.get("bigCircle"));
+        bigCircle.setColor(new Color(1, 1, 1, 1));
+        bigCircle.makeAnimatable();
+        bigCircle.setRect(new Rectangle(0, 0, 0, 0));
 
 
     }
@@ -158,7 +221,12 @@ public class CreateScreen implements Screen, InputProcessor {
 
         bigCircle.arect.height = bigCircle.arect.width;
         bigCircle.render(game.batch);
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
+        game.sr.setColor(1,1,1,0.15f);
+        game.sr.rect(0, 0, 1080, 1920);
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().drawCircle(game.sr);
         }
@@ -168,6 +236,7 @@ public class CreateScreen implements Screen, InputProcessor {
             entry.getValue().drawTexture(game.batch);
         }
         game.batch.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -188,7 +257,7 @@ public class CreateScreen implements Screen, InputProcessor {
         }
         game.batch.begin();
         game.batch.setColor(Color.WHITE);
-        game.batch.draw(Assets.batteryTexture, getScreenLeft(game.cam)+20, getScreenTop(game.cam)-160, 128, 128);
+        game.batch.draw(Assets.Textures.get("battery"), getScreenLeft(game.cam)+20, getScreenTop(game.cam)-160, 128, 128);
         game.batch.end();
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
         game.sr.setColor(Color.WHITE);
@@ -209,6 +278,8 @@ public class CreateScreen implements Screen, InputProcessor {
         boolean btnTouch = false;
 
         cbtn.get("play").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
+        cbtn.get("save").pos.set(getScreenRight(game.cam)-250, getScreenTop(game.cam)-100);
+        cbtn.get("load").pos.set(getScreenRight(game.cam)-400, getScreenTop(game.cam)-100);
         cbtn.get("edit").pos.set(getScreenLeft(game.cam)+100, getScreenBottom(game.cam)+100);
         cbtn.get("delete").pos.set(getScreenLeft(game.cam)+250, getScreenBottom(game.cam)+100);
         cbtn.get("move").pos.set(getScreenLeft(game.cam)+400, getScreenBottom(game.cam)+100);
@@ -235,10 +306,17 @@ public class CreateScreen implements Screen, InputProcessor {
                         if(!antry.getKey().equals(entry.getKey())) antry.getValue().deselect();
                     }
                 } else editorMode = -1;
-                if(entry.getKey().equals("play")) {
-                    game.setScreen(new PlayScreen(game, -1, new Level(new LevelData(level))));
+                switch(entry.getKey()) {
+                    case "play":
+                        game.setScreen(new PlayScreen(game, -1, new Level(new LevelData(level))));
+                        break;
+                    case "save":
+                        Gdx.input.getTextInput(new SaveLevelInputListener(), "Dialog Title", "", "Hint Value");
+                        break;
+                    case "load":
+                        Gdx.input.getTextInput(new LoadLevelInputListener(), "Dialog Title", "", "Gint value");
+                        break;
                 }
-            } else {
             }
             btnTouch |= entry.getValue().justTouched();
         }
@@ -246,40 +324,49 @@ public class CreateScreen implements Screen, InputProcessor {
         if (Gdx.input.justTouched() && !btnTouch) {
             tap = true;
 
-            if(editorMode==EDITOR_BUILD) {
-                Platform p = new Platform();
-                p.rect.set(new Rectangle(touchPos.x, touchPos.y-20, 0, 40));
-                p.type = PAD_TYPE_HORIZONTAL;
-                p.fixed = true;
-                p.dir = PAD_DIR_NONE;
-                p.add();
-                level.lpads.add(p);
-                level.addingPad = true;
-            } else if(editorMode==EDITOR_DELETE) {
-                Iterator<Platform> i = level.lpads.iterator();
-                while(i.hasNext()) {
-                    Platform p = i.next();
-                    if (p.rect.contains(touchPos.x, touchPos.y)) {
-                        i.remove();
-                    }
-                }
-            } else if(editorMode==EDITOR_FINAL) {
-                Iterator<Platform> i = level.lpads.iterator();
-                while(i.hasNext()) {
-                    Platform p = i.next();
-                    if(p.rect.contains(touchPos.x, touchPos.y)) {
-                        for(Platform lp : level.lpads) {
-                            lp.dir = PAD_DIR_NONE;
+            if(Math.sqrt(Math.pow(touchPos.x-level.player.pos.x, 2) + Math.pow(touchPos.y-level.player.pos.y, 2))<level.player.size) {
+                movingPlayer = true;
+            } else {
+                if (editorMode == EDITOR_BUILD) {
+                    Platform p = new Platform();
+                    p.rect.set(new Rectangle(touchPos.x, touchPos.y - 20, 0, 40));
+                    p.type = PAD_TYPE_HORIZONTAL;
+                    p.fixed = true;
+                    p.dir = PAD_DIR_NONE;
+                    p.add();
+                    level.lpads.add(p);
+                    level.addingPad = true;
+                } else if (editorMode == EDITOR_DELETE) {
+                    Iterator<Platform> i = level.lpads.iterator();
+                    while (i.hasNext()) {
+                        Platform p = i.next();
+                        if (p.rect.contains(touchPos.x, touchPos.y)) {
+                            i.remove();
                         }
-                        p.dir = PAD_DIR_FINISH;
+                    }
+                } else if (editorMode == EDITOR_FINAL) {
+                    Iterator<Platform> i = level.lpads.iterator();
+                    while (i.hasNext()) {
+                        Platform p = i.next();
+                        if (p.rect.contains(touchPos.x, touchPos.y)) {
+                            for (Platform lp : level.lpads) {
+                                lp.dir = PAD_DIR_NONE;
+                            }
+                            p.dir = PAD_DIR_FINISH;
+                        }
                     }
                 }
             }
         } else if (Gdx.input.isTouched()) {
-            if(editorMode==EDITOR_BUILD) {
-                if (level.addingPad && level.lpads.size() > 0) {
-                    Platform p = level.lpads.get(level.lpads.size() - 1);
-                    p.rect.setWidth(touchPos.x - p.rect.x);
+            if(movingPlayer) {
+                level.player.pos.x = level.initPos.x = touchPos.x;
+                level.player.pos.y = level.initPos.y = touchPos.y;
+            } else {
+                if(editorMode==EDITOR_BUILD) {
+                    if (level.addingPad && level.lpads.size() > 0) {
+                        Platform p = level.lpads.get(level.lpads.size() - 1);
+                        p.rect.setWidth(touchPos.x - p.rect.x);
+                    }
                 }
             }
         } else if (level.addingPad) {
@@ -289,6 +376,7 @@ public class CreateScreen implements Screen, InputProcessor {
         } else if(tap) {
             // Mouse Leave
             tap = false;
+            movingPlayer = false;
         }
         //end
 
@@ -348,10 +436,9 @@ public class CreateScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if(editorMode==EDITOR_MOVE) {
+        if(editorMode==EDITOR_MOVE && !movingPlayer) {
             float x = Gdx.input.getDeltaX();
             float y = Gdx.input.getDeltaY();
-
             game.cam.translate(-x,y);
         }
         return true;

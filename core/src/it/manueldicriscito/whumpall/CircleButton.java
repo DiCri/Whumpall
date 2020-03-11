@@ -18,17 +18,21 @@ public class CircleButton {
 
     public Vector2 pos; // center position of circle
     public Texture texture;
-    float textureRotation;
+    private float textureRotation;
     public int textureSize; // size of the texture
-    public boolean tap;
+    private boolean tap;
     public int dSize; // default size
     public int hSize; // hold size
-    public boolean clicked; // if button has been clicked
+    private boolean clicked; // if button has been clicked
     public boolean holdDown; // if the button is hold down at the moment
-    boolean selected;
-    boolean hasShadow;
-    boolean jTouch = false;
+    private boolean selected;
+    private boolean hasShadow;
+    private boolean jTouch = false;
+    public float alpha;
 
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+    }
     public CircleButton(CircleButton cb) {
         this.size = new Animations.AnimatableFloat(cb.size.get());
         this.color = new Animations.AnimatableColor(cb.color.get());
@@ -44,6 +48,7 @@ public class CircleButton {
         this.hSize= cb.hSize;
         this.holdDown = cb.holdDown;
         this.hasShadow = cb.hasShadow;
+        this.alpha = cb.alpha;
     }
     public CircleButton() {
         pos = new Vector2(0, 0);
@@ -60,13 +65,14 @@ public class CircleButton {
         selected = false;
         textureRotation = 0;
         hasShadow = true;
+        alpha = 1f;
     }
     public void toggleShadow() {
         hasShadow = !hasShadow;
     }
     public void drawCircle(ShapeRenderer sr) {
         if(hasShadow) {
-            sr.setColor(this.shadowColor);
+            sr.setColor(shadowColor.r, shadowColor.g, shadowColor.b, alpha);
             sr.circle(pos.x, pos.y-10, size.get(), 100);
         }
         sr.setColor(color.get());
@@ -75,7 +81,8 @@ public class CircleButton {
     public void drawTexture(SpriteBatch batch) {
         if(texture!=null) {
             int rad = textureSize/2;
-            batch.setColor(Assets.darkerBlueColor);
+            Color cl = Assets.Colors.get("darkerBlue");
+            batch.setColor(cl.r, cl.g, cl.b, alpha);
             batch.draw(texture, pos.x-rad+3, pos.y-rad-5, rad*2, rad*2);
             batch.setColor(Color.WHITE);
             batch.draw(texture, pos.x-rad+3, pos.y-rad, rad*2, rad*2);

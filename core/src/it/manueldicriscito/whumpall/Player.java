@@ -10,7 +10,7 @@ public class Player {
     public Vector2 pos;
     public Vector2 lpos;
     Vector2 vel;
-    float size;
+    public float size;
     int gravity;
     int j;
     private boolean paused;

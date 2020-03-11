@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_LEFT;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.getAngle;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
@@ -59,8 +60,8 @@ public class LevelRenderer {
     private void renderBackground() {
         this.sr.begin(ShapeRenderer.ShapeType.Filled);
         sr.setProjectionMatrix(cam.combined);
-        Color mainColor = Assets.lightBlueColor;
-        Color darkColor = Assets.darkLightBlueColor;
+        Color mainColor = Assets.Colors.get("lightBlue");
+        Color darkColor = Assets.Colors.get("darkLightBlue");
 
         sr.setColor(mainColor);
         sr.rect(getScreenLeft(cam), getScreenBottom(cam), getScreenRight(cam)-getScreenLeft(cam), getScreenTop(cam)-getScreenBottom(cam));
@@ -124,9 +125,9 @@ public class LevelRenderer {
         sr.end();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-        sr.setColor(Assets.darkBlueColor);
+        sr.setColor(Assets.Colors.get("darkBlue"));
         sr.rect(getScreenRight(cam)-120, getScreenBottom(cam)+40, 80, 40);
-        sr.setColor(Assets.darkerBlueColor);
+        sr.setColor(Assets.Colors.get("darkerBlue"));
         sr.rect(getScreenRight(cam)-120, getScreenBottom(cam)+80, 80, 40);
         sr.end();
     }
@@ -135,7 +136,7 @@ public class LevelRenderer {
             batch.setProjectionMatrix(cam.combined);
             batch.begin();
             batch.setColor(new Color(1, 1, 1, level.playerGuide.alpha));
-            batch.draw(Assets.playerTexture,
+            batch.draw(Assets.Textures.get("player"),
                     level.playerGuide.pos.x-level.playerGuide.size/2,
                     level.playerGuide.pos.y-level.playerGuide.size/2,
                     level.player.size,
@@ -147,20 +148,20 @@ public class LevelRenderer {
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
         batch.setColor(new Color(1, 1, 1, 0.078f*level.player.alpha));
-        batch.draw(Assets.playerShadowTexture,
+        batch.draw(Assets.Textures.get("playerShadow"),
                 level.player.pos.x-level.player.size/2-33+level.player.offset.x,
                 level.player.pos.y - level.player.size/2-33+level.player.offset.y,
                 level.player.size+60,
                 level.player.size+60);
         batch.flush();
-        batch.setColor(Assets.shadowColor.r, Assets.shadowColor.g, Assets.shadowColor.b, level.player.alpha);
+        batch.setColor(Assets.Colors.get("shadow").r, Assets.Colors.get("shadow").g, Assets.Colors.get("shadow").b, level.player.alpha);
 
-        batch.draw(Assets.playerGunTexture,
+        batch.draw(Assets.Textures.get("playerGun"),
                 level.player.pos.x-level.player.size/2-15, level.player.pos.y-level.player.size/2-15,
                 35, 35,
                 level.player.size+30,
                 level.player.size+30, 1, 1, gunRotation+30, 0, 0, 71, 71, false, false);
-        batch.draw(Assets.playerTexture,
+        batch.draw(Assets.Textures.get("player"),
                 level.player.pos.x-level.player.size/2+level.player.offset.x,
                 level.player.pos.y-level.player.size/2+level.player.offset.y,
                 level.player.size,
@@ -169,7 +170,7 @@ public class LevelRenderer {
         sr.begin(ShapeRenderer.ShapeType.Filled);
         gunPos.x = (float)(Math.cos(Math.toRadians(gunRotation+30))*20-Math.sin(Math.toRadians(gunRotation+30))*20+level.player.pos.x);
         gunPos.y = (float)(Math.sin(Math.toRadians(gunRotation+30))*20+Math.cos(Math.toRadians(gunRotation+30))*20+level.player.pos.y);
-        sr.setColor(Assets.darkerBlueColor);
+        sr.setColor(Assets.Colors.get("darkerBlue"));
         sr.ellipse(level.player.pos.x-5-2+level.player.vel.x*5/300, level.player.pos.y-7+level.player.vel.y*20/(level.player.j*2), 6, 15-(15-playerEyes.get()));
         sr.ellipse(level.player.pos.x+2+level.player.vel.x*5/300, level.player.pos.y-7+level.player.vel.y*20/(level.player.j*2), 6, 15-(15-playerEyes.get()));
         if(Math.random()*1000<5) {
@@ -195,17 +196,20 @@ public class LevelRenderer {
     }
     private void renderPad(Platform p) {
         if(p.dir==PAD_DIR_NONE) {
-            sr.setColor(Assets.darkBlueColor.r, Assets.darkBlueColor.g, Assets.darkBlueColor.b, p.added?1f:0.75f);
+            sr.setColor(Assets.Colors.get("darkBlue").r, Assets.Colors.get("darkBlue").g, Assets.Colors.get("darkBlue").b, p.added?1f:0.75f);
             sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
             if(p.fixed && p.added) {
-                sr.setColor(Assets.darkerBlueColor);
+                sr.setColor(Assets.Colors.get("darkerBlue"));
                 sr.rect(p.rect.x, p.rect.y + p.rect.height / 2, p.rect.width, p.rect.height / 2);
             }
         } else if(p.dir==PAD_DIR_FINISH) {
-            sr.setColor(Assets.shadowColor);
+            sr.setColor(Assets.Colors.get("shadow"));
             sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
         }
-        sr.rect(p.rect.x, p.rect.y-20, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.playerShadowColor, Assets.playerShadowColor);
+        if(p.dir==PAD_DIR_LEFT) {
+            
+        }
+        sr.rect(p.rect.x, p.rect.y-20, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.Colors.get("playerShadow"), Assets.Colors.get("playerShadow"));
         /*
         if(p.hasShield) {
             sr.setColor(Color.WHITE);

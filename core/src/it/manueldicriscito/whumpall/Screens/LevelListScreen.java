@@ -1,6 +1,7 @@
 package it.manueldicriscito.whumpall.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -18,12 +19,14 @@ import java.util.List;
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
+import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Whumpall;
 
 import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_COMPLETED;
 import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_LOCKED;
 import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
+import static it.manueldicriscito.whumpall.Whumpall.getLevels;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
@@ -36,6 +39,8 @@ public class LevelListScreen implements Screen {
     private GlyphLayout glyphLayout = new GlyphLayout();
     int level;
 
+    List<LevelData> list;
+
     public LevelListScreen(Whumpall game) {
         super();
         this.game = game;
@@ -44,8 +49,9 @@ public class LevelListScreen implements Screen {
         int levels = 50;
         level = 0;
 
+        list = getLevels();
         game.cam.position.set(540, 960, 0);
-        for(int i=0; i<15; i++) {
+        for(int i=0; i<list.size(); i++) {
             if(!game.prefs.contains("lv"+i)) {
                 if(i==0) {
                     game.prefs.putInteger("lv"+i, LEVELSTATE_UNLOCKED);
@@ -63,20 +69,20 @@ public class LevelListScreen implements Screen {
                 case LEVELSTATE_COMPLETED:
                     cb.color.set(Color.WHITE);
                     cb.defaultColor.set(Color.WHITE);
-                    cb.shadowColor.set(Assets.darkerBlueColor);
+                    cb.shadowColor.set(Assets.Colors.get("darkerBlue"));
                     cb.tapColor.set(Color.WHITE);
                     break;
                 case LEVELSTATE_UNLOCKED:
-                    cb.color.set(Assets.darkerBlueColor);
-                    cb.defaultColor.set(Assets.darkerBlueColor);
-                    cb.tapColor.set(Assets.darkBlueColor);
+                    cb.color.set(Assets.Colors.get("darkerBlue"));
+                    cb.defaultColor.set(Assets.Colors.get("darkerBlue"));
+                    cb.tapColor.set(Assets.Colors.get("darkerBlue"));
                     cb.shadowColor.set(Color.WHITE);
                     break;
                 case LEVELSTATE_LOCKED:
-                    cb.color.set(Assets.darkerBlueColor);
-                    cb.defaultColor.set(Assets.darkerBlueColor);
-                    cb.tapColor.set(Assets.darkerBlueColor);
-                    cb.shadowColor.set(Assets.darkerBlueColor);
+                    cb.color.set(Assets.Colors.get("darkerBlue"));
+                    cb.defaultColor.set(Assets.Colors.get("darkerBlue"));
+                    cb.tapColor.set(Assets.Colors.get("darkerBlue"));
+                    cb.shadowColor.set(Assets.Colors.get("darkerBlue"));
                     break;
             }
             cb.size.set(80);
@@ -88,7 +94,7 @@ public class LevelListScreen implements Screen {
         game.prefs.flush();
 
         bigCircle = new Image();
-        bigCircle.setTexture(Assets.bigCircleTexture);
+        bigCircle.setTexture(Assets.Textures.get("bigCircle"));
         bigCircle.setColor(new Color(1, 1, 1, 1));
         bigCircle.makeAnimatable();
 
@@ -109,7 +115,7 @@ public class LevelListScreen implements Screen {
     public void render(float delta) {
         update(delta);
 
-        Gdx.gl.glClearColor(Assets.darkBlueColor.r, Assets.darkBlueColor.g, Assets.darkBlueColor.b, 1);
+        Gdx.gl.glClearColor(Assets.Colors.get("darkBlue").r, Assets.Colors.get("darkBlue").g, Assets.Colors.get("darkBlue").b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
@@ -119,14 +125,15 @@ public class LevelListScreen implements Screen {
         game.sr.end();
         game.batch.begin();
         BitmapFont levelButtonsFont = Assets.fontTibitto50;
-        levelButtonsFont.setColor(Assets.darkerBlueColor);
+        levelButtonsFont.setColor(Assets.Colors.get("darkerBlue"));
         for(CircleButton cb : levelButtons) {
-            levelButtonsFont.setColor(Assets.darkerBlueColor);
+            levelButtonsFont.setColor(Assets.Colors.get("darkerBlue"));
             int levelState = game.prefs.getInteger("lv"+levelButtons.indexOf(cb));
             if(levelState==LEVELSTATE_UNLOCKED) {
                 levelButtonsFont.setColor(Color.WHITE);
             }
-            String text = Integer.toString(levelButtons.indexOf(cb)+1);
+            //String text = Integer.toString(levelButtons.indexOf(cb)+1);
+            String text = list.get(levelButtons.indexOf(cb)).name;
             glyphLayout.setText(levelButtonsFont, text);
             Assets.fontTibitto50.draw(game.batch, text, cb.pos.x-glyphLayout.width/2, cb.pos.y+glyphLayout.height/2);
         }
@@ -156,6 +163,9 @@ public class LevelListScreen implements Screen {
                 Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.by,-2500, false, 2500, 0);
                 level = levelButtons.indexOf(cb)+1;
             }
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.E)) {
+            game.setScreen(new CreateScreen(game));
         }
         Animations.run();
     }

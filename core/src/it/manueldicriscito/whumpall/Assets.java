@@ -8,34 +8,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Assets {
-    public static Color lightBlueColor;
-    public static Color darkLightBlueColor;
-    public static Color darkBlueColor;
-    public static Color darkerBlueColor;
-    public static Color shadowColor;
-    public static Color greenColor;
-    public static Color fuchsiaColor;
-    public static Color gravityZoneColor;
-    public static Color playerShadowColor;
-    public static Texture playerTexture;
-    public static Texture playerShadowTexture;
-    public static Texture playerGunTexture;
-    public static Texture bigCircleTexture;
-    public static Texture retryButtonTexture;
-    public static Texture nextButtonTexture;
-    public static Texture playButtonTexture;
-    public static Texture backButtonTexture;
-    public static Texture editButtonTexture;
-    public static Texture deleteButtonTexture;
-    public static Texture moveButtonTexture;
-    public static Texture finalButtonTexture;
-    public static Texture wipTexture;
-    public static Texture titleTopTexture;
-    public static Texture titleBottomTexture;
-    public static Texture titleShadowTexture;
-    public static Texture titleWhiteTexture;
-    public static Texture batteryTexture;
+    public static Map<String, Color> Colors = new HashMap<>();
+    public static Map<String, Texture> Textures = new HashMap<>();
     public static BitmapFont fontKoHoRegular100;
     public static BitmapFont fontKoHoItalic50;
     public static BitmapFont fontTibitto50;
@@ -69,34 +47,38 @@ public class Assets {
         }
     }
     public static void load() {
-        playerTexture = loadTexture("ball.png");
-        playerShadowTexture = loadTexture("blur_circle.png");
-        bigCircleTexture = loadTexture("big_circle.png");
-        retryButtonTexture = loadTexture("retry.png");
-        playButtonTexture = loadTexture("play.png");
-        nextButtonTexture = loadTexture("play.png");
-        backButtonTexture = loadTexture("list.png");
-        editButtonTexture = loadTexture("edit-option.png");
-        deleteButtonTexture = loadTexture("delete_option.png");
-        moveButtonTexture = loadTexture("move_option.png");
-        finalButtonTexture = loadTexture("final-option.png");
-        titleTopTexture = loadTexture("title_top.png");
-        titleBottomTexture = loadTexture("title_bottom.png");
-        titleShadowTexture = loadTexture("title_shadow.png");
-        titleWhiteTexture = loadTexture("title_white.png");
-        playerGunTexture = loadTexture("gun.png");
-        wipTexture = loadTexture("wip.png");
-        batteryTexture = loadTexture("battery.png");
+        Textures.put("player", loadTexture("ball.png"));
+        Textures.put("playerShadow", loadTexture("blur_circle.png"));
+        Textures.put("bigCircle", loadTexture("big_circle.png"));
+        Textures.put("retry", loadTexture("retry.png"));
+        Textures.put("save", loadTexture("save.png"));
+        Textures.put("load", loadTexture("load.png"));
+        Textures.put("play", loadTexture("play.png"));
+        Textures.put("next", loadTexture("play.png"));
+        Textures.put("back", loadTexture("list.png"));
+        Textures.put("edit", loadTexture("edit-option.png"));
+        Textures.put("delete", loadTexture("delete_option.png"));
+        Textures.put("move", loadTexture("move_option.png"));
+        Textures.put("final", loadTexture("final-option.png"));
+        Textures.put("titleTop", loadTexture("title_top.png"));
+        Textures.put("titleBottom", loadTexture("title_bottom.png"));
+        Textures.put("titleShadow", loadTexture("title_shadow.png"));
+        Textures.put("titleWhite", loadTexture("title_white.png"));
+        Textures.put("playerGun", loadTexture("gun.png"));
+        Textures.put("wip", loadTexture("wip.png"));
+        Textures.put("battery", loadTexture("battery.png"));
+
         //lightBlueColor = new Color(0, 0.678f, 0.710f, 1);
-        lightBlueColor = new Color(0x00adb5ff);
-        darkLightBlueColor = new Color(0x008589ff);
-        greenColor = new Color(0x00b300ff);
-        fuchsiaColor = new Color(0xb300b3ff);
-        darkBlueColor = new Color(0x2f3e46ff);
-        darkerBlueColor = new Color(0x222831ff);
-        shadowColor = new Color(0xedededff);
-        gravityZoneColor = new Color(0x00b32dff);
-        playerShadowColor = new Color(0, 0, 0, 50/255f);
+        Colors.put("lightBlue", new Color(0x00adb5ff));
+        Colors.put("darkLightBlue", new Color(0x008589ff));
+        Colors.put("green", new Color(0x00b300ff));
+        Colors.put("fuchsia", new Color(0xb300b3ff));
+        Colors.put("darkBlue", new Color(0x2f3e46ff));
+        Colors.put("darkerBlue", new Color(0x222831ff));
+        Colors.put("shadow", new Color(0xedededff));
+        Colors.put("gravityZone", new Color(0x00b32dff));
+        Colors.put("playerShadow", new Color(0, 0, 0, 50/255f));
+
         elegyMusic = loadMusic("Elegy.ogg");
 
         FreeTypeFontGenerator generator = loadFontGenerator("KoHo/KoHo-Regular.ttf");
@@ -160,9 +142,8 @@ public class Assets {
 
 
     public static void dispose() {
-        playerTexture.dispose();
-        playerShadowTexture.dispose();
-        bigCircleTexture.dispose();
+        Textures.clear();
+        Colors.clear();
         fontKoHoRegular100.dispose();
         fontKoHoItalic50.dispose();
         fontKoHoBold50.dispose();

@@ -19,6 +19,8 @@ import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_LEFT;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
+import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
+import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
 
 
 public class Level {
@@ -40,6 +42,7 @@ public class Level {
     public DiCriTimer gsTimer;
     public Animations.AnimatableFloat totalBlocksWidth;
     public LevelData levelData;
+    public String name;
 
 
     Vector3 touchPos;
@@ -68,8 +71,103 @@ public class Level {
             new_pad.add();
             lpads.add(new_pad);
         }
+        respawnPlayer();
+        respawnPlayerGuide();
     }
 
+    public void generateLevel(int level) {
+        lpads.clear();
+        pads.clear();
+        respawnPlayer();
+        respawnPlayerGuide();
+
+        if(level==-1) {
+            initPos.x = 100;
+            initPos.y = 1220;
+            initJump = 750;
+            initGrav = 1500;
+            initSpeed.x = 300;
+            initSpeed.y = -50;
+            maxMana = 200;
+            maxPads = 1;
+        } else {
+            this.generateLevel(loadLevel(Integer.toString(level)));
+        }
+        /*
+        if(level==1) {
+            Platform new_pad;
+            GravityZone new_gzone;
+
+            new_pad = new Platform();
+            new_pad.rect.set(100, 1020, 250, 40);
+            new_pad.fixed = true;
+            new_pad.dir = PAD_DIR_NONE;
+            new_pad.add();
+            lpads.add(new_pad);
+
+            new_pad = new Platform();
+            new_pad.rect.set(700, 1020, 250, 40);
+            new_pad.fixed = true;
+            new_pad.dir = PAD_DIR_FINISH;
+            new_pad.add();
+            lpads.add(new_pad);
+
+
+            initPos.x = 100;
+            initPos.y = 1220;
+            initJump = 750;
+            initGrav = 1500;
+            initSpeed.x = 300;
+            initSpeed.y = -50;
+            maxMana = 200;
+            maxPads = 1;
+        } else if(level==2) {
+            Platform new_pad;
+            GravityZone new_gzone;
+
+            new_pad = new Platform();
+            new_pad.rect.set(100, 1020, 250, 40);
+            new_pad.fixed = true;
+            new_pad.dir = PAD_DIR_NONE;
+            new_pad.add();
+            lpads.add(new_pad);
+
+            new_pad = new Platform();
+            new_pad.rect.set(400, 1020, 250, 40);
+            new_pad.fixed = true;
+            new_pad.dir = PAD_DIR_NONE;
+            new_pad.add();
+            lpads.add(new_pad);
+
+            new_pad = new Platform();
+            new_pad.rect.set(1000, 1020, 250, 40);
+            new_pad.fixed = true;
+            new_pad.dir = PAD_DIR_FINISH;
+            new_pad.add();
+            lpads.add(new_pad);
+
+            new_pad = new Platform();
+            new_pad.rect.set(-500, 1020, 250, 40);
+            new_pad.fixed = true;
+            new_pad.dir = PAD_DIR_NONE;
+            new_pad.add();
+            lpads.add(new_pad);
+
+            initPos.x = 100;
+            initPos.y = 1220;
+            initJump = 750;
+            initGrav = 1500;
+            initSpeed.x = 300;
+            initSpeed.y = -50;
+            maxMana = 200;
+            maxPads = 100;
+        }
+
+         */
+
+
+
+    }
     public void generateLevel(LevelData levelData) {
         this.levelData = levelData;
         resetLevel();
@@ -102,6 +200,7 @@ public class Level {
         timer = new DiCriTimer();
         gsTimer = new DiCriTimer();
         gsTimer.start();
+        name = "Untitled";
 
         globalVars.put("lastTapTime", System.currentTimeMillis());
         globalVars.put("addedBlocksMana", 0f);
@@ -200,7 +299,7 @@ public class Level {
                             Range.single(0.5f),
                             Range.single(-0.4f),
                             Range.single(1500),
-                            Assets.darkBlueColor,
+                            Assets.Colors.get("darkBlue"),
                             5000
                     );
                     player.jump();
@@ -235,7 +334,7 @@ public class Level {
                             Range.single(0.5f),
                             Range.single(-0.4f),
                             Range.single(1500),
-                            Assets.darkBlueColor,
+                            Assets.Colors.get("darkBlue"),
                             5000
                     );
                     player.jump();
@@ -250,90 +349,6 @@ public class Level {
         }
         for(Platform p : lpads) {
             checkPadCollision(player, p);
-        }
-    }
-    public void generateLevel(int level) {
-        lpads.clear();
-        pads.clear();
-        respawnPlayer();
-        respawnPlayerGuide();
-        if(level==-1) {
-            initPos.x = 100;
-            initPos.y = 1220;
-            initJump = 750;
-            initGrav = 1500;
-            initSpeed.x = 300;
-            initSpeed.y = -50;
-            maxMana = 200;
-            maxPads = 1;
-        }
-        if(level==1) {
-            Platform new_pad;
-            GravityZone new_gzone;
-
-            new_pad = new Platform();
-            new_pad.rect.set(100, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(700, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_FINISH;
-            new_pad.add();
-            lpads.add(new_pad);
-
-
-            initPos.x = 100;
-            initPos.y = 1220;
-            initJump = 750;
-            initGrav = 1500;
-            initSpeed.x = 300;
-            initSpeed.y = -50;
-            maxMana = 200;
-            maxPads = 1;
-        } else if(level==2) {
-            Platform new_pad;
-            GravityZone new_gzone;
-
-            new_pad = new Platform();
-            new_pad.rect.set(100, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(400, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(1000, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_FINISH;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(-500, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            initPos.x = 100;
-            initPos.y = 1220;
-            initJump = 750;
-            initGrav = 1500;
-            initSpeed.x = 300;
-            initSpeed.y = -50;
-            maxMana = 200;
-            maxPads = 100;
         }
     }
     public int getManaUsed() {

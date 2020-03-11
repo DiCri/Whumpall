@@ -7,22 +7,40 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.Screens.CreateScreen;
 import it.manueldicriscito.whumpall.Screens.LevelListScreen;
 import it.manueldicriscito.whumpall.Screens.PlayScreen;
@@ -53,8 +71,10 @@ public class Whumpall extends Game {
 	public Viewport port;
 	public ShapeRenderer sr;
 	public Preferences prefs;
+	private static Json json;
 
 	public static Map<String, Object> globalVars = new HashMap<String, Object>();
+	public static List<Vector2> playerLine = new ArrayList<>();
 
 	static float getAngle(float x1, float y1, float x2, float y2) {
 		float angle = (float) Math.toDegrees(Math.atan2(y2 - y1, x2 - x1));
@@ -94,7 +114,6 @@ public class Whumpall extends Game {
 			float y = (a1*c2-a2*c1)/determinant;
 			return new Vector2(x, y);
 		}
-
 	}
 
 
@@ -109,14 +128,112 @@ public class Whumpall extends Game {
 		port = new ExtendViewport(1080, 1920, cam);
 		port.apply(true);
 		prefs = Gdx.app.getPreferences("levels");
+		json = new Json();
+		json.setUsePrototypes(false);
 
 		timer = new DiCriTimer();
 
 		Assets.load();
 
-		//setScreen(new PlayScreen(this, 1));
-		//setScreen(new LevelListScreen(this));
-		setScreen(new CreateScreen(this));
+		setScreen(new LevelListScreen(this));
+
+	}
+
+	public static List<LevelData> getLevels() {
+		FileHandle file = Gdx.files.local("levels.dat");
+		List<LevelData> list = new ArrayList<>();
+		try {
+			InputStreamReader reader = new InputStreamReader(file.read());
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			String line;
+			do {
+				line = bufferedReader.readLine();
+				if(line!=null) {
+					JsonValue root = new JsonReader().parse(line);
+					list.add(new LevelData(root));
+				}
+			} while(line!=null);
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public static LevelData loadLevel(String title) {
+		LevelData levelData = null;
+		FileHandle file = Gdx.files.local("levels.dat");
+
+		boolean found = false;
+		try {
+			InputStreamReader reader = new InputStreamReader(file.read());
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			String line = "";
+			do {
+				line = bufferedReader.readLine();
+				if(line!=null) {
+					JsonValue root = new JsonReader().parse(line);
+					levelData = new LevelData(root);
+					found = levelData.name.equals(title);
+					if(!found) levelData = null;
+				}
+			} while(!found && line!=null);
+			reader.close();
+			if(!found) levelData = new LevelData();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return levelData;
+	}
+	public static void saveLevel(String title, LevelData levelData) {
+		levelData.name = title;
+		FileHandle file = Gdx.files.local("levels.dat");
+		System.out.println(json.toJson(levelData));
+		try {
+			OutputStreamWriter writer = new OutputStreamWriter(file.write(true));
+			BufferedWriter bufferedWriter = new BufferedWriter(writer);
+			bufferedWriter.write(json.toJson(levelData));
+			bufferedWriter.newLine();
+			bufferedWriter.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		/*
+		ArrayList<LevelData> lds = new ArrayList<>();
+		lds.add(levelData);
+		try{
+			if(!file.exists()){
+				file.file().createNewFile();
+				ObjectOutputStream scoreOutput = new ObjectOutputStream(file.write(false));
+				for(LevelData ldi : lds) {
+					scoreOutput.writeObject(ldi);
+				}
+				scoreOutput.close();
+			}
+			ObjectInputStream levelInput = new ObjectInputStream(file.read());
+			LevelData ld;
+			try {
+				do {
+					ld=(LevelData)levelInput.readObject();
+					if(levelData!=null) lds.add(ld);
+				} while(true);
+			} catch(EOFException e) {
+			}
+
+			levelInput.close();
+
+			ObjectOutputStream scoreOutput = new ObjectOutputStream(file.write(false));
+			for(LevelData ldi : lds) {
+				scoreOutput.writeObject(ldi);
+			}
+			scoreOutput.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+
+		 */
 	}
 
 	@Override
@@ -127,5 +244,4 @@ public class Whumpall extends Game {
 		batch.dispose();
 		Assets.dispose();
 	}
-
 }
