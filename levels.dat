@@ -1,2 +1,3 @@
 {lpads:[{dir:0,rect:{x:100,y:1020,width:250,height:40},type:0,fixed:true,gravityChange:1},{dir:3,rect:{x:700,y:1020,width:250,height:40},type:0,fixed:true,gravityChange:1}],initPos:{x:100,y:1220},initSpeed:{x:300,y:-50},initJump:750,initGrav:1500,maxPads:1,maxMana:200,name:1}
-{lpads:[{dir:0,rect:{x:276.00003,y:997.6,width:479.99997,height:40},type:0,fixed:true,gravityChange:1},{dir:3,rect:{x:26.399963,y:983.19995,width:228.00003,height:40},type:0,fixed:true,gravityChange:1}],initPos:{x:134.40002,y:1281.6001},initSpeed:{x:300,y:-50},initJump:750,initGrav:1500,maxPads:1,maxMana:200,name:2}
+{lpads:[{dir:3,rect:{x:26.399963,y:983.19995,width:228.00003,height:40},type:0,fixed:true,gravityChange:1},{dir:0,rect:{x:328.8,y:1000,width:408.00006,height:40},type:0,fixed:true,gravityChange:1}],initPos:{x:206.4,y:1262.4},initSpeed:{x:300,y:-50},initJump:750,initGrav:1500,maxPads:2,maxMana:400,name:2}
+

@@ -189,51 +189,40 @@ public class Whumpall extends Game {
 		levelData.name = title;
 		FileHandle file = Gdx.files.local("levels.dat");
 		System.out.println(json.toJson(levelData));
-		try {
-			OutputStreamWriter writer = new OutputStreamWriter(file.write(true));
-			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-			bufferedWriter.write(json.toJson(levelData));
-			bufferedWriter.newLine();
-			bufferedWriter.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
 
-		/*
-		ArrayList<LevelData> lds = new ArrayList<>();
-		lds.add(levelData);
-		try{
-			if(!file.exists()){
-				file.file().createNewFile();
-				ObjectOutputStream scoreOutput = new ObjectOutputStream(file.write(false));
-				for(LevelData ldi : lds) {
-					scoreOutput.writeObject(ldi);
+		List<LevelData> levels = getLevels();
+		boolean existing = false;
+		for(LevelData ld : levels) {
+			if(ld.name.equals(levelData.name)) {
+				existing = true;
+				try {
+					OutputStreamWriter writer = new OutputStreamWriter(file.write(false));
+					BufferedWriter bufferedWriter = new BufferedWriter(writer);
+					levels.set(levels.indexOf(ld), levelData);
+					for(LevelData ldd : levels) {
+						bufferedWriter.write(json.toJson(ldd));
+						bufferedWriter.newLine();
+					}
+					bufferedWriter.close();
+					writer.close();
+				} catch(Exception e) {
+					e.printStackTrace();
 				}
-				scoreOutput.close();
+				break;
 			}
-			ObjectInputStream levelInput = new ObjectInputStream(file.read());
-			LevelData ld;
+		}
+		if(!existing) {
 			try {
-				do {
-					ld=(LevelData)levelInput.readObject();
-					if(levelData!=null) lds.add(ld);
-				} while(true);
-			} catch(EOFException e) {
+				OutputStreamWriter writer = new OutputStreamWriter(file.write(true));
+				BufferedWriter bufferedWriter = new BufferedWriter(writer);
+				bufferedWriter.write(json.toJson(levelData));
+				bufferedWriter.newLine();
+				bufferedWriter.close();
+				writer.close();
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-
-			levelInput.close();
-
-			ObjectOutputStream scoreOutput = new ObjectOutputStream(file.write(false));
-			for(LevelData ldi : lds) {
-				scoreOutput.writeObject(ldi);
-			}
-			scoreOutput.close();
 		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-
-		 */
 	}
 
 	@Override

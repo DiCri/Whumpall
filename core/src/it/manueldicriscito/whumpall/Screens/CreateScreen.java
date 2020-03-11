@@ -311,10 +311,10 @@ public class CreateScreen implements Screen, InputProcessor {
                         game.setScreen(new PlayScreen(game, -1, new Level(new LevelData(level))));
                         break;
                     case "save":
-                        Gdx.input.getTextInput(new SaveLevelInputListener(), "Dialog Title", "", "Hint Value");
+                        Gdx.input.getTextInput(new SaveLevelInputListener(), "Set level name", "", "Untitled");
                         break;
                     case "load":
-                        Gdx.input.getTextInput(new LoadLevelInputListener(), "Dialog Title", "", "Gint value");
+                        Gdx.input.getTextInput(new LoadLevelInputListener(), "Which level to load?", "", "Level title");
                         break;
                 }
             }
@@ -324,35 +324,41 @@ public class CreateScreen implements Screen, InputProcessor {
         if (Gdx.input.justTouched() && !btnTouch) {
             tap = true;
 
-            if(Math.sqrt(Math.pow(touchPos.x-level.player.pos.x, 2) + Math.pow(touchPos.y-level.player.pos.y, 2))<level.player.size) {
-                movingPlayer = true;
+            if(touchPos.x>getScreenRight(game.cam)-100&&touchPos.y<getScreenBottom(game.cam)+100) {
+                Gdx.input.getTextInput(new EditMaxPadsInputListener(), "Set max pads", "", "2");
+            } else if(touchPos.x<getScreenLeft(game.cam)+100&&touchPos.y>getScreenTop(game.cam)-100) {
+                Gdx.input.getTextInput(new EditMaxManaInputListener(), "Set max mana", "", "500");
             } else {
-                if (editorMode == EDITOR_BUILD) {
-                    Platform p = new Platform();
-                    p.rect.set(new Rectangle(touchPos.x, touchPos.y - 20, 0, 40));
-                    p.type = PAD_TYPE_HORIZONTAL;
-                    p.fixed = true;
-                    p.dir = PAD_DIR_NONE;
-                    p.add();
-                    level.lpads.add(p);
-                    level.addingPad = true;
-                } else if (editorMode == EDITOR_DELETE) {
-                    Iterator<Platform> i = level.lpads.iterator();
-                    while (i.hasNext()) {
-                        Platform p = i.next();
-                        if (p.rect.contains(touchPos.x, touchPos.y)) {
-                            i.remove();
-                        }
-                    }
-                } else if (editorMode == EDITOR_FINAL) {
-                    Iterator<Platform> i = level.lpads.iterator();
-                    while (i.hasNext()) {
-                        Platform p = i.next();
-                        if (p.rect.contains(touchPos.x, touchPos.y)) {
-                            for (Platform lp : level.lpads) {
-                                lp.dir = PAD_DIR_NONE;
+                if(Math.sqrt(Math.pow(touchPos.x-level.player.pos.x, 2) + Math.pow(touchPos.y-level.player.pos.y, 2))<level.player.size) {
+                    movingPlayer = true;
+                } else {
+                    if (editorMode == EDITOR_BUILD) {
+                        Platform p = new Platform();
+                        p.rect.set(new Rectangle(touchPos.x, touchPos.y - 20, 0, 40));
+                        p.type = PAD_TYPE_HORIZONTAL;
+                        p.fixed = true;
+                        p.dir = PAD_DIR_NONE;
+                        p.add();
+                        level.lpads.add(p);
+                        level.addingPad = true;
+                    } else if (editorMode == EDITOR_DELETE) {
+                        Iterator<Platform> i = level.lpads.iterator();
+                        while (i.hasNext()) {
+                            Platform p = i.next();
+                            if (p.rect.contains(touchPos.x, touchPos.y)) {
+                                i.remove();
                             }
-                            p.dir = PAD_DIR_FINISH;
+                        }
+                    } else if (editorMode == EDITOR_FINAL) {
+                        Iterator<Platform> i = level.lpads.iterator();
+                        while (i.hasNext()) {
+                            Platform p = i.next();
+                            if (p.rect.contains(touchPos.x, touchPos.y)) {
+                                for (Platform lp : level.lpads) {
+                                    lp.dir = PAD_DIR_NONE;
+                                }
+                                p.dir = PAD_DIR_FINISH;
+                            }
                         }
                     }
                 }
