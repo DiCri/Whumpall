@@ -9,6 +9,9 @@ import java.util.List;
 
 import it.manueldicriscito.whumpall.Level;
 import it.manueldicriscito.whumpall.Platform;
+import it.manueldicriscito.whumpall.Whumpall;
+
+import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
 
 public class LevelData implements Serializable {
     public List<PlatformData> lpads;
@@ -50,6 +53,13 @@ public class LevelData implements Serializable {
         maxPads = level.maxPads;
         maxMana = level.maxMana;
     }
+    public JsonValue getValue(JsonValue root, String key) {
+        try {
+            return root.get(key);
+        } catch(Exception e) {
+            return null;
+        }
+    }
     public LevelData(JsonValue root) {
         lpads = new ArrayList<>();
         for(JsonValue pad : root.get("lpads")) {
@@ -62,5 +72,6 @@ public class LevelData implements Serializable {
         maxPads = root.getInt("maxPads");
         maxMana = root.getInt("maxMana");
         name = root.getString("name");
+        //state = root.has("state")?root.getInt("state"):LEVELSTATE_UNLOCKED;
     }
 }

@@ -139,8 +139,48 @@ public class Whumpall extends Game {
 
 	}
 
+	public static JsonValue readData() {
+		FileHandle file = Gdx.files.local("data.dat");
+		JsonValue root = null;
+		try {
+			InputStreamReader reader = new InputStreamReader(file.read());
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			String line = bufferedReader.readLine();
+			if(line!=null) {
+				root = new JsonReader().parse(line);
+			}
+			bufferedReader.close();
+			reader.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return root;
+	}
+	public static void saveData(JsonValue root) {
+		FileHandle file = Gdx.files.local("data.dat");
+		try {
+			OutputStreamWriter writer = new OutputStreamWriter(file.write(false));
+			BufferedWriter bufferedWriter = new BufferedWriter(writer);
+			bufferedWriter.write(root.asString());
+			bufferedWriter.newLine();
+			bufferedWriter.close();
+			writer.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void deleteLevels() {
+		FileHandle file = Gdx.files.local("levels.dat");
+		if(!file.exists()) {
+			restoreLevels();
+		}
+		OutputStreamWriter writer = new OutputStreamWriter(file.write(false));
+		try { writer.close(); } catch(Exception e) { e.printStackTrace(); }
+	}
 	public static List<LevelData> getLevels() {
 		FileHandle file = Gdx.files.local("levels.dat");
+		if(!file.exists()) restoreLevels();
 		List<LevelData> list = new ArrayList<>();
 		try {
 			InputStreamReader reader = new InputStreamReader(file.read());
@@ -159,10 +199,14 @@ public class Whumpall extends Game {
 		}
 		return list;
 	}
-
+	public static void restoreLevels() {
+		FileHandle from = Gdx.files.internal("levels.dat");
+		from.copyTo(Gdx.files.local("levels.dat"));
+	}
 	public static LevelData loadLevel(String title) {
 		LevelData levelData = null;
 		FileHandle file = Gdx.files.local("levels.dat");
+		if(!file.exists()) restoreLevels();
 
 		boolean found = false;
 		try {
@@ -185,10 +229,18 @@ public class Whumpall extends Game {
 		}
 		return levelData;
 	}
+	public static void saveLevels(List<LevelData> list) {
+		for(LevelData ld : list) {
+			saveLevel(ld);
+		}
+	}
+	public static void saveLevel(LevelData levelData) {
+		saveLevel(levelData.name, levelData);
+	}
 	public static void saveLevel(String title, LevelData levelData) {
 		levelData.name = title;
 		FileHandle file = Gdx.files.local("levels.dat");
-		System.out.println(json.toJson(levelData));
+		if(!file.exists()) restoreLevels();
 
 		List<LevelData> levels = getLevels();
 		boolean existing = false;

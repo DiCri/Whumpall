@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import it.manueldicriscito.whumpall.AnimationTypes.Circ;
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
+import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.DiCriTimer;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Level;
@@ -38,7 +40,10 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
+import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
 import static it.manueldicriscito.whumpall.Whumpall.playerLine;
+import static it.manueldicriscito.whumpall.Whumpall.readData;
+import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
 
 
 public class PlayScreen implements Screen, InputProcessor {
