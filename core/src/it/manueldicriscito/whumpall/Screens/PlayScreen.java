@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -130,17 +131,20 @@ public class PlayScreen implements Screen, InputProcessor {
         cb.textureSize = 150;
         cb.pos = new Vector2(1080f/2, 600);
         cbtn.put("next", new CircleButton(cb));
-        cb.texture = Assets.Textures.get("edit");
-        cb.pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
-        cb.size.set(70);
-        cb.dSize = 70;
-        cb.hSize = 80;
-        cb.color.set(Assets.Colors.get("darkBlue"));
-        cb.shadowColor.set(Color.WHITE);
-        cb.defaultColor.set(Assets.Colors.get("darkBlue"));
-        cb.tapColor.set(Assets.Colors.get("darkerBlue"));
-        cb.textureSize = 70;
-        cbtn.put("edit", new CircleButton(cb));
+
+        if(lv==-1) {
+            cb.texture = Assets.Textures.get("edit");
+            cb.pos.set(getScreenRight(game.cam) - 100, getScreenTop(game.cam) - 100);
+            cb.size.set(70);
+            cb.dSize = 70;
+            cb.hSize = 80;
+            cb.color.set(Assets.Colors.get("darkBlue"));
+            cb.shadowColor.set(Color.WHITE);
+            cb.defaultColor.set(Assets.Colors.get("darkBlue"));
+            cb.tapColor.set(Assets.Colors.get("darkerBlue"));
+            cb.textureSize = 70;
+            cbtn.put("edit", new CircleButton(cb));
+        }
 
         playerLine.clear();
     }
@@ -195,18 +199,20 @@ public class PlayScreen implements Screen, InputProcessor {
                 entry.getValue().drawTexture(game.batch);
             }
         }
-        glyphLayout.setText(Assets.fontKoHoRegular100, "Level " + level.currentLevel + " Completed");
-        Assets.fontKoHoRegular100.setColor(0, 0, 0, labelLevelCompletedAlpha.get());
-        Assets.fontKoHoRegular100.draw(game.batch, "Level " + level.currentLevel + " Completed", 1080f/2-glyphLayout.width/2, 1380);
-        glyphLayout.setText(Assets.fontKoHoItalic50, "Attempts: " + level.attempts);
-        Assets.fontKoHoItalic50.setColor(0, 0, 0, labelAttemptsAlpha.get());
-        Assets.fontKoHoItalic50.draw(game.batch, "Attempts: " + level.attempts, 1080f/2-glyphLayout.width/2, 1200);
-        glyphLayout.setText(Assets.fontKoHoItalic50, "Blocks placed: " + level.pads.size());
-        Assets.fontKoHoItalic50.setColor(0, 0, 0, labelBlocksPlacedAlpha.get());
-        Assets.fontKoHoItalic50.draw(game.batch, "Blocks placed: " + level.pads.size(), 1080f/2-glyphLayout.width/2, 1100);
-        glyphLayout.setText(Assets.fontKoHoItalic50, "Total blocks width: " + (int)level.totalBlocksWidth.get());
-        Assets.fontKoHoItalic50.setColor(0, 0, 0, labelTotalBlocksWidthAlpha.get());
-        Assets.fontKoHoItalic50.draw(game.batch, "Total blocks width: " + (int)level.totalBlocksWidth.get(), 1080f/2-glyphLayout.width/2, 1000);
+        BitmapFont bmfont = Assets.Fonts.get("KoHoRegular100");
+        glyphLayout.setText(bmfont, "Level " + level.currentLevel + " Completed");
+        bmfont.setColor(0, 0, 0, labelLevelCompletedAlpha.get());
+        bmfont.draw(game.batch, "Level " + level.currentLevel + " Completed", 1080f/2-glyphLayout.width/2, 1380);
+        bmfont = Assets.Fonts.get("KoHoItalic50");
+        glyphLayout.setText(bmfont, "Attempts: " + level.attempts);
+        bmfont.setColor(0, 0, 0, labelAttemptsAlpha.get());
+        bmfont.draw(game.batch, "Attempts: " + level.attempts, 1080f/2-glyphLayout.width/2, 1200);
+        glyphLayout.setText(bmfont, "Blocks placed: " + level.pads.size());
+        bmfont.setColor(0, 0, 0, labelBlocksPlacedAlpha.get());
+        bmfont.draw(game.batch, "Blocks placed: " + level.pads.size(), 1080f/2-glyphLayout.width/2, 1100);
+        glyphLayout.setText(bmfont, "Total blocks width: " + (int)level.totalBlocksWidth.get());
+        bmfont.setColor(0, 0, 0, labelTotalBlocksWidthAlpha.get());
+        bmfont.draw(game.batch, "Total blocks width: " + (int)level.totalBlocksWidth.get(), 1080f/2-glyphLayout.width/2, 1000);
         game.batch.end();
 
         // TAP TO START: begin
@@ -218,9 +224,10 @@ public class PlayScreen implements Screen, InputProcessor {
         game.sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         game.batch.begin();
-        glyphLayout.setText(Assets.fontKoHoRegular100, "tap to start");
-        Assets.fontKoHoRegular100.setColor(1, 1, 1, 1*level.ttsAlpha.get());
-        Assets.fontKoHoRegular100.draw(game.batch, "tap to start", getScreenLeft(game.cam)+1080f/2-glyphLayout.width/2, 1200);
+        bmfont = Assets.Fonts.get("KoHoRegular100");
+        glyphLayout.setText(bmfont, "tap to start");
+        bmfont.setColor(1, 1, 1, 1*level.ttsAlpha.get());
+        bmfont.draw(game.batch, "tap to start", getScreenLeft(game.cam)+1080f/2-glyphLayout.width/2, 1200);
         game.batch.end();
         // TAP TO START: end
 
@@ -262,7 +269,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
         //buttons
 
-        cbtn.get("edit").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
+        if(lv==-1) cbtn.get("edit").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
         boolean btnTouch = false;
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);

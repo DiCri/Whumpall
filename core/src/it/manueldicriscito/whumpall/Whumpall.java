@@ -160,7 +160,8 @@ public class Whumpall extends Game {
 		FileHandle file = Gdx.files.local("data.dat");
 		try {
 			OutputStreamWriter writer = new OutputStreamWriter(file.write(false));
-			BufferedWriter bufferedWriter = new BufferedWriter(writer);
+			BufferedWriter bufferedWriter =
+					new BufferedWriter(writer);
 			bufferedWriter.write(root.asString());
 			bufferedWriter.newLine();
 			bufferedWriter.close();

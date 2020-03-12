@@ -14,11 +14,8 @@ import java.util.Map;
 public class Assets {
     public static Map<String, Color> Colors = new HashMap<>();
     public static Map<String, Texture> Textures = new HashMap<>();
-    public static BitmapFont fontKoHoRegular100;
-    public static BitmapFont fontKoHoItalic50;
-    public static BitmapFont fontTibitto50;
+    public static Map<String, BitmapFont> Fonts = new HashMap<>();
     public static BitmapFont fontKoho;
-    static BitmapFont fontKoHoBold50;
     private static BitmapFont fontKoHoBold100;
     private static Music elegyMusic;
 
@@ -85,18 +82,20 @@ public class Assets {
         if(generator!=null) {
             FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
             params.size = 100; params.color = Color.WHITE;
-            fontKoHoRegular100 = generator.generateFont(params);
+            Fonts.put("KoHoRegular100", generator.generateFont(params));
             generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Italic.ttf"));
             params.size = 50; params.color = Color.WHITE;
-            fontKoHoItalic50 = generator.generateFont(params);
+            Fonts.put("KoHoItalic50", generator.generateFont(params));
             generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Bold.ttf"));
             params.size = 50; params.color = Color.WHITE;
-            fontKoHoBold50 = generator.generateFont(params);
+            Fonts.put("KoHoBold50", generator.generateFont(params));
             params.size = 100; params.color = Color.WHITE;
             fontKoHoBold100 = generator.generateFont(params);
             generator = new FreeTypeFontGenerator(Gdx.files.internal("Tibitto/TIBITTO_.TTF"));
             params.size = 100; params.color = Color.WHITE;
-            fontTibitto50 = generator.generateFont(params);
+            Fonts.put("Tibitto100", generator.generateFont(params));
+            params.size = 150; params.color = Color.WHITE;
+            Fonts.put("Tibitto150", generator.generateFont(params));
         }
 
     }
@@ -144,8 +143,6 @@ public class Assets {
     public static void dispose() {
         Textures.clear();
         Colors.clear();
-        fontKoHoRegular100.dispose();
-        fontKoHoItalic50.dispose();
-        fontKoHoBold50.dispose();
+        Fonts.clear();
     }
 }

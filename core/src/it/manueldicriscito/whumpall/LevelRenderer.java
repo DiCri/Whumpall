@@ -74,8 +74,8 @@ public class LevelRenderer {
         for(Platform p : level.pads) {
             psize += p.added?1:0;
         }
-        Assets.fontKoHoBold50.setColor(1, 1, 1, 1);
-        Assets.fontKoHoBold50.draw(batch, ""+(level.maxPads-psize), getScreenRight(cam)-180, getScreenBottom(cam)+100);
+        Assets.Fonts.get("KoHoBold50").setColor(1, 1, 1, 1);
+        Assets.Fonts.get("KoHoBold50").draw(batch, ""+(level.maxPads-psize), getScreenRight(cam)-180, getScreenBottom(cam)+100);
         batch.end();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);

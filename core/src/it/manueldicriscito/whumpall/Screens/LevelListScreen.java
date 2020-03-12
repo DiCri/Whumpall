@@ -88,7 +88,7 @@ public class LevelListScreen implements Screen {
             cb.size.set(80);
             cb.dSize = 80;
             cb.hSize = 90;
-            cb.pos.set(getScreenLeft(game.cam)+130+200*(i%5f), getScreenTop(game.cam)-(200+((float)Math.floor(i/5f)*200)));
+            cb.pos.set(getScreenLeft(game.cam)+130+200*(i%5f), getScreenTop(game.cam)-(600+((float)Math.floor(i/5f)*200)));
             levelButtons.add(cb);
         }
         game.prefs.flush();
@@ -124,19 +124,22 @@ public class LevelListScreen implements Screen {
         }
         game.sr.end();
         game.batch.begin();
-        BitmapFont levelButtonsFont = Assets.fontTibitto50;
-        levelButtonsFont.setColor(Assets.Colors.get("darkerBlue"));
         for(CircleButton cb : levelButtons) {
-            levelButtonsFont.setColor(Assets.Colors.get("darkerBlue"));
+            Assets.Fonts.get("Tibitto100").setColor(Assets.Colors.get("darkerBlue"));
             int levelState = game.prefs.getInteger("lv"+levelButtons.indexOf(cb));
             if(levelState==LEVELSTATE_UNLOCKED) {
-                levelButtonsFont.setColor(Color.WHITE);
+                Assets.Fonts.get("Tibitto100").setColor(Color.WHITE);
             }
             //String text = Integer.toString(levelButtons.indexOf(cb)+1);
             String text = list.get(levelButtons.indexOf(cb)).name;
-            glyphLayout.setText(levelButtonsFont, text);
-            Assets.fontTibitto50.draw(game.batch, text, cb.pos.x-glyphLayout.width/2, cb.pos.y+glyphLayout.height/2);
+            glyphLayout.setText(Assets.Fonts.get("Tibitto100"), text);
+            Assets.Fonts.get("Tibitto100").draw(game.batch, text, cb.pos.x-glyphLayout.width/2, cb.pos.y+glyphLayout.height/2);
         }
+        glyphLayout.setText(Assets.Fonts.get("Tibitto150"), "World 1");
+        Assets.Fonts.get("Tibitto150").setColor(Assets.Colors.get("darkerBlue"));
+        Assets.Fonts.get("Tibitto150").draw(game.batch, "World 1", 1080f/2-glyphLayout.width/2, getScreenTop(game.cam)-200);
+        Assets.Fonts.get("Tibitto150").setColor(Color.WHITE);
+        Assets.Fonts.get("Tibitto150").draw(game.batch, "World 1", 1080f/2-glyphLayout.width/2, getScreenTop(game.cam)-190);
         game.batch.end();
 
         bigCircle.arect.height = bigCircle.arect.width;
