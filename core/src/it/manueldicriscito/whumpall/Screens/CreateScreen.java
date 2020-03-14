@@ -36,6 +36,7 @@ import it.manueldicriscito.whumpall.Particles;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
@@ -171,25 +172,36 @@ public class CreateScreen implements Screen, InputProcessor {
         cb.texture = Assets.Textures.get("play");
         cb.textureSize = 70;
         cbtn.put("play", new CircleButton(cb));
+
         cb.pos.set(getScreenRight(game.cam)-250, getScreenTop(game.cam)-100);
         cb.texture = Assets.Textures.get("save");
         cbtn.put("save", new CircleButton(cb));
+
         cb.pos.set(getScreenRight(game.cam)-400, getScreenTop(game.cam)-100);
         cb.texture = Assets.Textures.get("load");
         cbtn.put("load", new CircleButton(cb));
+
         cb.holdDown = true;
         cb.pos.set(getScreenLeft(game.cam)+100, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("edit");
         cbtn.put("edit", new CircleButton(cb));
+
         cb.pos.set(getScreenLeft(game.cam)+250, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("delete");
         cbtn.put("delete", new CircleButton(cb));
+
         cb.pos.set(getScreenLeft(game.cam)+400, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("move");
         cbtn.put("move", new CircleButton(cb));
+
         cb.pos.set(getScreenLeft(game.cam)+550, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("final");
         cbtn.put("final", new CircleButton(cb));
+
+        cb.holdDown = false;
+        cb.pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
+        cb.texture = Assets.Textures.get("padtype_horizontal");
+        cbtn.put("padtype", new CircleButton(cb));
 
         bigCircle = new Image();
         bigCircle.setTexture(Assets.Textures.get("bigCircle"));
@@ -284,6 +296,7 @@ public class CreateScreen implements Screen, InputProcessor {
         cbtn.get("delete").pos.set(getScreenLeft(game.cam)+250, getScreenBottom(game.cam)+100);
         cbtn.get("move").pos.set(getScreenLeft(game.cam)+400, getScreenBottom(game.cam)+100);
         cbtn.get("final").pos.set(getScreenLeft(game.cam)+550, getScreenBottom(game.cam)+100);
+        cbtn.get("padtype").pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
@@ -305,7 +318,9 @@ public class CreateScreen implements Screen, InputProcessor {
                     for(Map.Entry<String, CircleButton> antry : cbtn.entrySet()) {
                         if(!antry.getKey().equals(entry.getKey())) antry.getValue().deselect();
                     }
-                } else editorMode = -1;
+                } else {
+                    if(!entry.getKey().equals("padtype")) editorMode = -1;
+                }
                 switch(entry.getKey()) {
                     case "play":
                         game.setScreen(new PlayScreen(game, -1, new Level(new LevelData(level))));
@@ -315,6 +330,10 @@ public class CreateScreen implements Screen, InputProcessor {
                         break;
                     case "load":
                         Gdx.input.getTextInput(new LoadLevelInputListener(), "Which level to load?", "", "Level title");
+                        break;
+                    case "padtype":
+                        entry.getValue().texture = entry.getValue().texture==Assets.Textures.get("padtype_horizontal")?
+                                Assets.Textures.get("padtype_vertical"):Assets.Textures.get("padtype_horizontal");
                         break;
                 }
             }
@@ -334,8 +353,13 @@ public class CreateScreen implements Screen, InputProcessor {
                 } else {
                     if (editorMode == EDITOR_BUILD) {
                         Platform p = new Platform();
-                        p.rect.set(new Rectangle(touchPos.x, touchPos.y - 20, 0, 40));
-                        p.type = PAD_TYPE_HORIZONTAL;
+                        if(cbtn.get("padtype").texture==Assets.Textures.get("padtype_horizontal")) {
+                            p.rect.set(new Rectangle(touchPos.x, touchPos.y - 20, 0, 40));
+                            p.type = PAD_TYPE_HORIZONTAL;
+                        } else {
+                            p.rect.set(new Rectangle(touchPos.x-20, touchPos.y, 40, 0));
+                            p.type = PAD_TYPE_VERTICAL;
+                        }
                         p.fixed = true;
                         p.dir = PAD_DIR_NONE;
                         p.add();
@@ -371,7 +395,14 @@ public class CreateScreen implements Screen, InputProcessor {
                 if(editorMode==EDITOR_BUILD) {
                     if (level.addingPad && level.lpads.size() > 0) {
                         Platform p = level.lpads.get(level.lpads.size() - 1);
-                        p.rect.setWidth(touchPos.x - p.rect.x);
+                        switch(p.type) {
+                            case PAD_TYPE_HORIZONTAL:
+                                p.rect.setWidth(touchPos.x-p.rect.x);
+                                break;
+                            case PAD_TYPE_VERTICAL:
+                                p.rect.setHeight(touchPos.y-p.rect.y);
+                                break;
+                        }
                     }
                 }
             }

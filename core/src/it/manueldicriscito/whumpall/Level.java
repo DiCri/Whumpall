@@ -18,6 +18,8 @@ import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_LEFT;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
 import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
@@ -277,8 +279,50 @@ public class Level {
         if(!nogz) player.gravity = initGrav;
     }
     public void checkPadCollision(Player player, Platform p) {
-        if(player.getRight() > p.getLeft() && player.getLeft() < p.getRight()) {
-            if (player.getOldTop() >= p.getBottom() && player.getTop() < p.getBottom()) {
+        if(p.type==PAD_TYPE_VERTICAL && player.getTop()>p.getBottom() && player.getBottom()<p.getTop()) {
+            if(player.getOldLeft() > p.getRight() && player.getLeft() <= p.getRight()) {
+                player.vel.x = player.vel.x>0?player.vel.x:-player.vel.x;
+            }
+            if(player.getOldRight() < p.getLeft() && player.getRight() >= p.getLeft()) {
+                player.vel.x = player.vel.x<0?player.vel.x:-player.vel.x;
+            }
+        }
+        if(p.type==PAD_TYPE_HORIZONTAL && player.getRight() > p.getLeft() && player.getLeft() < p.getRight()) {
+
+            if (player.getOldTop() <= p.getBottom() && player.getTop() > p.getBottom()) {
+                //up
+                if(gameState==GAME_PLAY) {
+                    p.fall();
+                    p.add();
+                    p.fix();
+                    if(p.dir==PAD_DIR_FINISH) gameState = GAME_FINISH;
+                }
+                if(player.gravity>0) {
+                    player.vel.y = 0;
+                    player.pos.y = p.rect.y - player.size / 2;
+                } else {
+                    Particles.trigger(
+                            5,
+                            player.pos.x,
+                            player.pos.y,
+                            Range.range(5, 20),
+                            Range.range(5, 20),
+                            Range.single(-20),
+                            Range.single(-20),
+                            Range.range(-200, 200),
+                            Range.range(0, 500),
+                            Range.single(0.5f),
+                            Range.single(-0.4f),
+                            Range.single(1500),
+                            Assets.Colors.get("darkBlue"),
+                            5000
+                    );
+                    player.jump();
+                    player.gravity*=p.gravityChange;
+                }
+            }
+            if (player.getOldBottom() > p.getTop() && player.getBottom() <= p.getTop()) {
+                //jump
                 if(gameState==GAME_PLAY) {
                     p.fall();
                     p.add();
@@ -308,37 +352,6 @@ public class Level {
                 } else {
                     player.vel.y = 0;
                     player.pos.y = p.rect.y + p.rect.height + player.size/2;
-                }
-            }
-            if (player.getOldBottom() < p.getTop() && player.getBottom() >= p.getTop()) {
-                if(gameState==GAME_PLAY) {
-                    p.fall();
-                    p.add();
-                    p.fix();
-                    if(p.dir==PAD_DIR_FINISH) gameState = GAME_FINISH;
-                }
-                if(player.gravity>0) {
-                    player.vel.y = 0;
-                    player.pos.y = p.rect.y - player.size / 2;
-                } else {
-                    Particles.trigger(
-                            5,
-                            player.pos.x,
-                            player.pos.y,
-                            Range.range(5, 20),
-                            Range.range(5, 20),
-                            Range.single(-20),
-                            Range.single(-20),
-                            Range.range(-200, 200),
-                            Range.range(0, 500),
-                            Range.single(0.5f),
-                            Range.single(-0.4f),
-                            Range.single(1500),
-                            Assets.Colors.get("darkBlue"),
-                            5000
-                    );
-                    player.jump();
-                    player.gravity*=p.gravityChange;
                 }
             }
         }

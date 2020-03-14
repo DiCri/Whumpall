@@ -12,6 +12,8 @@ import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_LEFT;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.getAngle;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
@@ -195,29 +197,27 @@ public class LevelRenderer {
         sr.end();
     }
     private void renderPad(Platform p) {
-        if(p.dir==PAD_DIR_NONE) {
-            sr.setColor(Assets.Colors.get("darkBlue").r, Assets.Colors.get("darkBlue").g, Assets.Colors.get("darkBlue").b, p.added?1f:0.75f);
-            sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
-            if(p.fixed && p.added) {
-                sr.setColor(Assets.Colors.get("darkerBlue"));
-                sr.rect(p.rect.x, p.rect.y + p.rect.height / 2, p.rect.width, p.rect.height / 2);
-            }
-        } else if(p.dir==PAD_DIR_FINISH) {
-            sr.setColor(Assets.Colors.get("shadow"));
-            sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
+        Color down,up;
+        switch(p.dir) {
+            case PAD_DIR_FINISH:
+                down = Assets.Colors.get("shadow");
+                up = Assets.Colors.get("shadow");
+                break;
+            default:
+                down = Assets.Colors.get("darkBlue");
+                up = Assets.Colors.get("darkerBlue");
         }
-        if(p.dir==PAD_DIR_LEFT) {
-            
+        sr.setColor(down.r, down.g, down.b, p.added?1f:0.75f);
+        sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
+        if(p.fixed && p.added) {
+            sr.setColor(up);
+            if(p.type==PAD_TYPE_HORIZONTAL) {
+                sr.rect(p.rect.x, p.rect.y + p.rect.height / 2, p.rect.width, p.rect.height / 2);
+            } else {
+                sr.rect(p.rect.x, p.rect.y, p.rect.width/2, p.rect.height);
+            }
         }
         sr.rect(p.rect.x, p.rect.y-20, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.Colors.get("playerShadow"), Assets.Colors.get("playerShadow"));
-        /*
-        if(p.hasShield) {
-            sr.setColor(Color.WHITE);
-            sr.rectLine(p.rect.x, p.rect.y, p.rect.x, p.rect.y+p.rect.height, 5);
-            sr.rectLine(p.rect.x, p.rect.y+p.rect.height, p.rect.x+p.rect.width, p.rect.y+p.rect.height, 5);
-            sr.rectLine(p.rect.x+p.rect.width, p.rect.y+p.rect.height, p.rect.x+p.rect.width, p.rect.y, 5);
-            sr.rectLine(p.rect.x+p.rect.width, p.rect.y, p.rect.x, p.rect.y, 5);
-        }*/
     }
     private void renderPads() {
         Gdx.gl.glEnable(GL20.GL_BLEND);

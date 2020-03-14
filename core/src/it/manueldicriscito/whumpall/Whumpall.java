@@ -181,7 +181,9 @@ public class Whumpall extends Game {
 	}
 	public static List<LevelData> getLevels() {
 		FileHandle file = Gdx.files.local("levels.dat");
-		if(!file.exists()) restoreLevels();
+		if(!file.exists()) {
+			restoreLevels();
+		}
 		List<LevelData> list = new ArrayList<>();
 		try {
 			InputStreamReader reader = new InputStreamReader(file.read());
@@ -207,7 +209,9 @@ public class Whumpall extends Game {
 	public static LevelData loadLevel(String title) {
 		LevelData levelData = null;
 		FileHandle file = Gdx.files.local("levels.dat");
-		if(!file.exists()) restoreLevels();
+		if(!file.exists()) {
+			restoreLevels();
+		}
 
 		boolean found = false;
 		try {

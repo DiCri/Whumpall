@@ -72,22 +72,22 @@ public class Player {
         return getLeft()+size;
     }
     float getTop() {
-        return pos.y-size/2;
+        return pos.y+size/2;
     }
     float getBottom() {
-        return getTop()+size;
+        return getTop()-size;
     }
-    private float getOldLeft() {
+    public float getOldLeft() {
         return lpos.x-size/2;
     }
     public float getOldRight() {
         return getOldLeft() + size;
     }
     float getOldTop() {
-        return lpos.y-size/2;
+        return lpos.y+size/2;
     }
     float getOldBottom() {
-        return getOldTop() + size;
+        return getOldTop() - size;
     }
 }
 

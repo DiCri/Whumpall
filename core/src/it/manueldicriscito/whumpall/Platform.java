@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 
 
@@ -53,9 +55,12 @@ public class Platform {
     }
 
     public void fix() {
-        if(rect.width<0) {
+        if(rect.width<0 && type==PAD_TYPE_HORIZONTAL) {
             rect.x+=rect.width;
             rect.width=-rect.width;
+        } else if(rect.height<0 && type==PAD_TYPE_VERTICAL) {
+            rect.y+=rect.height;
+            rect.height=-rect.height;
         }
     }
     public void add() {
@@ -75,10 +80,10 @@ public class Platform {
         return rect.width>0?rect.x+rect.width:rect.x;
     }
     float getTop() {
-        return rect.y;
+        return getBottom()+rect.height;
     }
     float getBottom() {
-        return getTop()+rect.height;
+        return rect.y;
     }
     public void makeAnimatable() {
         arect = new Animations.AnimatableRectangle(rect);
