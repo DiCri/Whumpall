@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
-import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_LEFT;
-import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
-import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.getAngle;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
@@ -33,6 +34,8 @@ public class LevelRenderer {
     private Animations.AnimatableFloat playerEyes;
     private Vector2 laserEndPos;
 
+    public static List<PadTouchLine> ptls = new ArrayList<>();
+
 
     public LevelRenderer(Whumpall game, Level level) {
         this.level = level;
@@ -50,6 +53,7 @@ public class LevelRenderer {
         renderPlayer();
         renderPlayerGuide();
         renderPads();
+        renderPadTouchLines();
         renderObjects();
     }
     private void renderGravityZones() {
@@ -232,6 +236,30 @@ public class LevelRenderer {
         }
         sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+    private void renderPadTouchLines() {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        for(PadTouchLine ptl : ptls) {
+            ptl.render(cam, sr);
+
+        }
+        Iterator<PadTouchLine> i = ptls.iterator();
+        while(i.hasNext()) {
+            PadTouchLine ptl = i.next();
+            ptl.render(cam, sr);
+            if(ptl.alpha.get()==0f) {
+                i.remove();
+            }
+        }
+        sr.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+    public static void spawnPadTouchLine(Player player, Platform p) {
+        PadTouchLine ptl = new PadTouchLine();
+        ptl.spawn(player, p);
+        ptls.add(ptl);
     }
     private void getLevelMinMax() {
         float min = 0;

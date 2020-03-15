@@ -95,7 +95,7 @@ public class Animations {
         AnimatableFloat r;
         AnimatableFloat g;
         AnimatableFloat b;
-        private AnimatableFloat a;
+        public AnimatableFloat a;
         private AnimatableColor() {
             r = new AnimatableFloat();
             g = new AnimatableFloat();

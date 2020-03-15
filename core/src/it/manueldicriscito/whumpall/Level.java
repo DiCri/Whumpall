@@ -12,6 +12,7 @@ import java.util.List;
 import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.Data.PlatformData;
 
+import static it.manueldicriscito.whumpall.LevelRenderer.spawnPadTouchLine;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_FINISH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_PLAY;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
@@ -70,6 +71,7 @@ public class Level {
             new_pad.rect.set(pd.rect);
             new_pad.fixed = pd.fixed;
             new_pad.dir = pd.dir;
+            new_pad.type = pd.type;
             new_pad.add();
             lpads.add(new_pad);
         }
@@ -346,6 +348,7 @@ public class Level {
                             Assets.Colors.get("darkBlue"),
                             5000
                     );
+                    spawnPadTouchLine(player, p);
                     player.jump();
                     player.gravity*=p.gravityChange;
 
