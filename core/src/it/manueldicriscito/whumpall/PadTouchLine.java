@@ -14,9 +14,32 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 
 public class PadTouchLine {
-    void spawn(Player player, Platform p) {
+    public final static int PADTOUCH_TOP = 0;
+    public final static int PADTOUCH_BOTTOM = 1;
+    public final static int PADTOUCH_LEFT = 2;
+    public final static int PADTOUCH_RIGHT = 3;
+    void spawn(Player player, Platform p, int loc) {
         this.p = p;
-        pos = new Vector2(player.pos.x+player.size/2, p.rect.y+p.rect.height);
+        this.pos = new Vector2(0, 0);
+        switch(loc) {
+            case PADTOUCH_TOP:
+                pos.x = player.pos.x;
+                pos.y = p.rect.y+p.rect.height;
+                break;
+            case PADTOUCH_BOTTOM:
+                pos.x = player.pos.x;
+                pos.y = p.rect.y;
+                break;
+            case PADTOUCH_LEFT:
+                pos.x = p.rect.x;
+                pos.y = player.pos.y;
+                break;
+            case PADTOUCH_RIGHT:
+                pos.x = p.rect.x+p.rect.width;
+                pos.y = player.pos.y;
+                break;
+        }
+        this.loc = loc;
         this.width = new Animations.AnimatableFloat(0f);
         this.alpha = new Animations.AnimatableFloat(1f);
         Animations.animate(
@@ -25,32 +48,57 @@ public class PadTouchLine {
                 Animations.AnimationAction.force,
                 this.alpha,
                 Animations.AnimationMove.to,
-                0f, false, 400, 200
+                0f, false, 500, 200
         );
         Animations.animate(
-                Animations.AnimationEase.inOut,
-                Animations.AnimationTiming.Linear,
+                Animations.AnimationEase.out,
+                Animations.AnimationTiming.Quart,
                 Animations.AnimationAction.waitPrev,
                 this.width,
                 Animations.AnimationMove.to,
-                p.rect.width*2, false, 200, 0
+                loc==PADTOUCH_TOP||loc==PADTOUCH_BOTTOM?p.rect.width*2:p.rect.height*2, false, 1000, 0
         );
     }
     void render(OrthographicCamera cam, ShapeRenderer sr) {
-        if(p.type==PAD_TYPE_HORIZONTAL) {
-            sr.setColor(1, 1, 1, this.alpha.get());
-            Rectangle clip = new Rectangle(pos.x-width.get()/2, p.rect.y+p.rect.height-3, width.get(), 5);
-            if(clip.x < p.rect.x) {
-                clip.x = p.rect.x;
-            }
-            if(clip.width+clip.x>p.rect.x+p.rect.width) {
-                clip.width = p.rect.width+p.rect.x-clip.x;
-            }
-            sr.rect(clip.x, clip.y, clip.width, clip.height);
+        sr.setColor(1, 1, 1, this.alpha.get());
+        Rectangle clip = new Rectangle(0, 0, 0, 0);
+        int linesize = 20;
+        switch(loc) {
+            case PADTOUCH_TOP:
+                clip.x = pos.x-width.get()/2; clip.y = p.rect.y+p.rect.height-linesize;
+                clip.width = width.get(); clip.height = linesize;
+                break;
+            case PADTOUCH_BOTTOM:
+                clip.x = pos.x-width.get()/2; clip.y = p.rect.y;
+                clip.width = width.get(); clip.height = linesize;
+                break;
+            case PADTOUCH_LEFT:
+                clip.x = p.rect.x; clip.y = pos.y-width.get();
+                clip.width = linesize; clip.height = width.get();
+                break;
+            case PADTOUCH_RIGHT:
+                clip.x = p.rect.x+p.rect.width-linesize; clip.y = pos.y-width.get();
+                clip.width = linesize; clip.height = width.get();
+                break;
         }
+        if (clip.x < p.rect.x) {
+            clip.x = p.rect.x;
+        }
+        if (clip.width + clip.x > p.rect.x + p.rect.width) {
+            clip.width = p.rect.width + p.rect.x - clip.x;
+        }
+        if(clip.y<p.rect.y) {
+            clip.y = p.rect.y;
+        }
+        if(clip.height+clip.y>p.rect.y+p.rect.height) {
+            clip.height = p.rect.height + p.rect.y-clip.y;
+        }
+
+        sr.rect(clip.x, clip.y, clip.width, clip.height);
     }
-    public Vector2 pos;
+    private Vector2 pos;
     public Animations.AnimatableFloat width;
-    public Animations.AnimatableFloat alpha;
+    private int loc;
+    Animations.AnimatableFloat alpha;
     public Platform p;
 }

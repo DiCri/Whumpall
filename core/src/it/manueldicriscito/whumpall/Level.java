@@ -13,6 +13,10 @@ import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.Data.PlatformData;
 
 import static it.manueldicriscito.whumpall.LevelRenderer.spawnPadTouchLine;
+import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_BOTTOM;
+import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_LEFT;
+import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_RIGHT;
+import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_TOP;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_FINISH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_PLAY;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
@@ -284,9 +288,11 @@ public class Level {
         if(p.type==PAD_TYPE_VERTICAL && player.getTop()>p.getBottom() && player.getBottom()<p.getTop()) {
             if(player.getOldLeft() > p.getRight() && player.getLeft() <= p.getRight()) {
                 player.vel.x = player.vel.x>0?player.vel.x:-player.vel.x;
+                spawnPadTouchLine(player, p, PADTOUCH_RIGHT);
             }
             if(player.getOldRight() < p.getLeft() && player.getRight() >= p.getLeft()) {
                 player.vel.x = player.vel.x<0?player.vel.x:-player.vel.x;
+                spawnPadTouchLine(player, p, PADTOUCH_LEFT);
             }
         }
         if(p.type==PAD_TYPE_HORIZONTAL && player.getRight() > p.getLeft() && player.getLeft() < p.getRight()) {
@@ -302,6 +308,7 @@ public class Level {
                 if(player.gravity>0) {
                     player.vel.y = 0;
                     player.pos.y = p.rect.y - player.size / 2;
+                    spawnPadTouchLine(player, p, PADTOUCH_BOTTOM);
                 } else {
                     Particles.trigger(
                             5,
@@ -348,7 +355,7 @@ public class Level {
                             Assets.Colors.get("darkBlue"),
                             5000
                     );
-                    spawnPadTouchLine(player, p);
+                    spawnPadTouchLine(player, p, PADTOUCH_TOP);
                     player.jump();
                     player.gravity*=p.gravityChange;
 

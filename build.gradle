@@ -13,7 +13,6 @@ buildscript {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.9'
         classpath 'com.android.tools.build:gradle:3.6.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.8'
-        classpath 'com.google.gms:google-services:4.2.0'
 
 
     }

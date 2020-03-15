@@ -256,9 +256,9 @@ public class LevelRenderer {
         sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
-    public static void spawnPadTouchLine(Player player, Platform p) {
+    static void spawnPadTouchLine(Player player, Platform p, int loc) {
         PadTouchLine ptl = new PadTouchLine();
-        ptl.spawn(player, p);
+        ptl.spawn(player, p, loc);
         ptls.add(ptl);
     }
     private void getLevelMinMax() {
