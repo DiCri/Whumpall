@@ -81,10 +81,17 @@ public class LevelRenderer {
             psize += p.added?1:0;
         }
         Assets.Fonts.get("KoHoBold50").setColor(1, 1, 1, 1);
-        Assets.Fonts.get("KoHoBold50").draw(batch, ""+(level.maxPads-psize), getScreenRight(cam)-180, getScreenBottom(cam)+100);
+        Assets.Fonts.get("KoHoBold50").draw(batch, ""+(level.maxPads-psize), getScreenLeft(cam)+150+80+20, getScreenTop(cam)-50-20);
+        batch.setColor(Color.WHITE);
+        batch.draw(Assets.Textures.get("battery"), getScreenLeft(cam)+20, getScreenTop(cam)-160, 128, 128);
+        Assets.Fonts.get("KoHoBold40").setColor(1, 1, 1, 1f);
+        Assets.Fonts.get("KoHoBold40").draw(batch,Integer.toString((int)Math.ceil(100-(100*level.totalBlocksWidth.get()/level.maxMana)))+'%', getScreenLeft(cam)+40, getScreenTop(cam)-150);
         batch.end();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.setColor(Color.WHITE);
+        sr.rect(getScreenLeft(cam)+20+11, getScreenTop(cam)-160+43, 90-(90f*level.totalBlocksWidth.get()/level.maxMana), 43);
+
         // construct line: begin
         if(level.pads.size()>0) {
             Platform lastp = level.pads.get(level.pads.size()-1);
@@ -132,9 +139,14 @@ public class LevelRenderer {
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
         sr.setColor(Assets.Colors.get("darkBlue"));
-        sr.rect(getScreenRight(cam)-120, getScreenBottom(cam)+40, 80, 40);
+        sr.rect(getScreenLeft(cam)+150, getScreenTop(cam)-130, 80, 40);
         sr.setColor(Assets.Colors.get("darkerBlue"));
-        sr.rect(getScreenRight(cam)-120, getScreenBottom(cam)+80, 80, 40);
+        sr.rect(getScreenLeft(cam)+150, getScreenTop(cam)-90, 80, 40);
+        sr.setColor(Color.WHITE);
+        sr.rectLine(getScreenLeft(cam)+150, getScreenTop(cam)-130, getScreenLeft(cam)+150, getScreenTop(cam)-50, 5);
+        sr.rectLine(getScreenLeft(cam)+150, getScreenTop(cam)-50, getScreenLeft(cam)+150+80, getScreenTop(cam)-50, 5);
+        sr.rectLine(getScreenLeft(cam)+150+80, getScreenTop(cam)-50, getScreenLeft(cam)+150+80, getScreenTop(cam)-130, 5);
+        sr.rectLine(getScreenLeft(cam)+150+80, getScreenTop(cam)-130, getScreenLeft(cam)+150, getScreenTop(cam)-130, 5);
         sr.end();
     }
     private void renderPlayerGuide() {

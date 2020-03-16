@@ -41,14 +41,14 @@ public class PadTouchLine {
         }
         this.loc = loc;
         this.width = new Animations.AnimatableFloat(0f);
-        this.alpha = new Animations.AnimatableFloat(1f);
+        this.alpha = new Animations.AnimatableFloat(0.05f);
         Animations.animate(
                 Animations.AnimationEase.inOut,
                 Animations.AnimationTiming.Linear,
                 Animations.AnimationAction.force,
                 this.alpha,
                 Animations.AnimationMove.to,
-                0f, false, 500, 200
+                0f, false, 500, 400
         );
         Animations.animate(
                 Animations.AnimationEase.out,
@@ -62,23 +62,23 @@ public class PadTouchLine {
     void render(OrthographicCamera cam, ShapeRenderer sr) {
         sr.setColor(1, 1, 1, this.alpha.get());
         Rectangle clip = new Rectangle(0, 0, 0, 0);
-        int linesize = 20;
+        int lineSize = 40;
         switch(loc) {
             case PADTOUCH_TOP:
-                clip.x = pos.x-width.get()/2; clip.y = p.rect.y+p.rect.height-linesize;
-                clip.width = width.get(); clip.height = linesize;
+                clip.x = pos.x-width.get()/2; clip.y = p.rect.y+p.rect.height-lineSize;
+                clip.width = width.get(); clip.height = lineSize;
                 break;
             case PADTOUCH_BOTTOM:
                 clip.x = pos.x-width.get()/2; clip.y = p.rect.y;
-                clip.width = width.get(); clip.height = linesize;
+                clip.width = width.get(); clip.height = lineSize;
                 break;
             case PADTOUCH_LEFT:
                 clip.x = p.rect.x; clip.y = pos.y-width.get();
-                clip.width = linesize; clip.height = width.get();
+                clip.width = lineSize; clip.height = width.get();
                 break;
             case PADTOUCH_RIGHT:
-                clip.x = p.rect.x+p.rect.width-linesize; clip.y = pos.y-width.get();
-                clip.width = linesize; clip.height = width.get();
+                clip.x = p.rect.x+p.rect.width-lineSize; clip.y = pos.y-width.get();
+                clip.width = lineSize; clip.height = width.get();
                 break;
         }
         if (clip.x < p.rect.x) {

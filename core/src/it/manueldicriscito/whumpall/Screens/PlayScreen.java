@@ -72,6 +72,7 @@ public class PlayScreen implements Screen, InputProcessor {
     private Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
 
     Map<String, CircleButton> cbtn = new HashMap<>();
+    boolean testCoords = false;
 
     private Vector3 touchPos = new Vector3();
 
@@ -247,14 +248,25 @@ public class PlayScreen implements Screen, InputProcessor {
             level.pads.clear();
             level.gsTimer.reset();
         }
-        game.batch.begin();
-        game.batch.setColor(Color.WHITE);
-        game.batch.draw(Assets.Textures.get("battery"), getScreenLeft(game.cam)+20, getScreenTop(game.cam)-160, 128, 128);
-        game.batch.end();
+
+        if(testCoords) {
+            game.batch.begin();
+            Assets.Fonts.get("KoHoRegular50").draw(game.batch, "[" + (int) touchPos.x + ", " + (int) touchPos.y + "]", getScreenRight(game.cam) - 300, getScreenBottom(game.cam) + 100);
+            game.batch.end();
+        }
+
+        //test
+
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
         game.sr.setColor(Color.WHITE);
-
         game.sr.rect(getScreenLeft(game.cam)+20+11, getScreenTop(game.cam)-160+43, 90-(90f*level.totalBlocksWidth.get()/level.maxMana), 43);
+
+        //test
+        if(testCoords) {
+            game.sr.rectLine(getScreenLeft(game.cam), touchPos.y, getScreenRight(game.cam), touchPos.y, 2);
+            game.sr.rectLine(touchPos.x, getScreenBottom(game.cam), touchPos.x, getScreenTop(game.cam), 2);
+        }
+
         game.sr.end();
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");

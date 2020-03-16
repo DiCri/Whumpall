@@ -43,6 +43,11 @@ public class Assets {
             return null;
         }
     }
+    static void loadFont(String name, FreeTypeFontGenerator generator, int size) {
+        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        params.size = size; params.color = Color.WHITE;
+        Fonts.put(name, generator.generateFont(params));
+    }
     public static void load() {
         Textures.put("player", loadTexture("ball.png"));
         Textures.put("playerShadow", loadTexture("blur_circle.png"));
@@ -83,21 +88,17 @@ public class Assets {
         FreeTypeFontGenerator generator = loadFontGenerator("KoHo/KoHo-Regular.ttf");
         if(generator!=null) {
             FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-            params.size = 100; params.color = Color.WHITE;
-            Fonts.put("KoHoRegular100", generator.generateFont(params));
+            loadFont("KoHoRegular50", generator, 50);
+            loadFont("KoHoRegular100", generator, 100);
             generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Italic.ttf"));
-            params.size = 50; params.color = Color.WHITE;
-            Fonts.put("KoHoItalic50", generator.generateFont(params));
+            loadFont("KoHoItalic50", generator, 50);
             generator = new FreeTypeFontGenerator(Gdx.files.internal("KoHo/KoHo-Bold.ttf"));
-            params.size = 50; params.color = Color.WHITE;
-            Fonts.put("KoHoBold50", generator.generateFont(params));
-            params.size = 100; params.color = Color.WHITE;
-            fontKoHoBold100 = generator.generateFont(params);
+            loadFont("KoHoBold40", generator, 40);
+            loadFont("KoHoBold50", generator, 50);
+            loadFont("KoHoBold100", generator, 100);
             generator = new FreeTypeFontGenerator(Gdx.files.internal("Tibitto/TIBITTO_.TTF"));
-            params.size = 100; params.color = Color.WHITE;
-            Fonts.put("Tibitto100", generator.generateFont(params));
-            params.size = 150; params.color = Color.WHITE;
-            Fonts.put("Tibitto150", generator.generateFont(params));
+            loadFont("Tibitto100", generator, 100);
+            loadFont("Tibitto150", generator, 150);
         }
 
     }
