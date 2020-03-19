@@ -129,6 +129,12 @@ public class Animations {
         public AnimatableRectangle(Rectangle rect) {
             this.set(rect);
         }
+        public AnimatableRectangle(AnimatableRectangle rect) {
+            set(new Rectangle(rect.x.get(), rect.y.get(), rect.width.get(), rect.height.get()));
+        }
+        public AnimatableRectangle(float x, float y, float width, float height) {
+            set(new Rectangle(x, y, width, height));
+        }
         public void set(Rectangle rect) {
             if(x!=null) x.set(rect.x); else x = new AnimatableFloat(rect.x);
             if(y!=null) y.set(rect.y); else y = new AnimatableFloat(rect.y);

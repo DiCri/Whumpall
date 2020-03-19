@@ -5,18 +5,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-
-public class CircleButton {
+public class Button {
     public Animations.AnimatableFloat size; // size of the circle
     public Animations.AnimatableColor color; // color of the circle
+    public Animations.AnimatableRectangle rect;
     public Color defaultColor;
     public Color shadowColor; // shadowColor
     public Color tapColor;
 
-    public Vector2 pos; // center position of circle
     public Texture texture;
     private float textureRotation;
     public int textureSize; // size of the texture
@@ -33,13 +33,13 @@ public class CircleButton {
     public void setAlpha(float alpha) {
         this.alpha = alpha;
     }
-    public CircleButton(CircleButton cb) {
+    public Button(Button cb) {
         this.size = new Animations.AnimatableFloat(cb.size.get());
         this.color = new Animations.AnimatableColor(cb.color.get());
         this.defaultColor = cb.defaultColor;
         this.shadowColor = cb.shadowColor;
         this.tapColor = cb.tapColor;
-        this.pos = new Vector2(cb.pos);
+        this.rect = new Animations.AnimatableRectangle(cb.rect);
         this.texture = cb.texture;
         this.textureRotation = cb.textureRotation;
         this.textureSize = cb.textureSize;
@@ -50,8 +50,8 @@ public class CircleButton {
         this.hasShadow = cb.hasShadow;
         this.alpha = cb.alpha;
     }
-    public CircleButton() {
-        pos = new Vector2(0, 0);
+    public Button() {
+        rect = new Animations.AnimatableRectangle(0, 0, 100, 100);
         textureSize = 50;
         color = new Animations.AnimatableColor(Color.WHITE);
         defaultColor = new Color(Color.WHITE);
@@ -70,15 +70,8 @@ public class CircleButton {
     public void toggleShadow() {
         hasShadow = !hasShadow;
     }
-    public void drawCircle(ShapeRenderer sr) {
-        if(hasShadow) {
-            sr.setColor(shadowColor.r, shadowColor.g, shadowColor.b, alpha);
-            sr.circle(pos.x, pos.y-10, size.get(), 100);
-        }
-        sr.setColor(color.get());
-        sr.circle(pos.x, pos.y, size.get(), 100);
-    }
     public void drawTexture(SpriteBatch batch) {
+        /*
         if(texture!=null) {
             int rad = textureSize/2;
             Color cl = Assets.Colors.get("darkerBlue");
@@ -87,9 +80,10 @@ public class CircleButton {
             batch.setColor(Color.WHITE);
             batch.draw(texture, pos.x-rad+3, pos.y-rad, rad*2, rad*2);
         }
+         */
     }
     public boolean hover(int x, int y) {
-        return Math.sqrt(Math.pow(x-pos.x, 2) + Math.pow(y-pos.y, 2))<size.get();
+        return x>rect.getX()&&x<rect.getX()+rect.getWidth()&&y>rect.getY()&&y<rect.getY()+rect.getHeight();
     }
     public void select() {
         Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Back, Animations.AnimationAction.force, size, Animations.AnimationMove.to, hSize, false, 200, 0);
@@ -133,5 +127,19 @@ public class CircleButton {
     public boolean justTouched() {
         return jTouch;
     }
-}
+    public void drawButton(ShapeRenderer sr) {
+        int radius = 50;
+        sr.setColor(1, 1, 1, 1);
+        sr.rect(rect.getX() + radius, rect.getY() + radius, rect.getWidth() - 2*radius, rect.getHeight() - 2*radius);
 
+        sr.rect(rect.getX() + radius, rect.getY(), rect.getWidth() - 2*radius, radius);
+        sr.rect(rect.getX() + rect.getWidth() - radius, rect.getY() + radius, radius, rect.getHeight() - 2*radius);
+        sr.rect(rect.getX() + radius, rect.getY() + rect.getHeight() - radius, rect.getWidth() - 2*radius, radius);
+        sr.rect(rect.getX(), rect.getY() + radius, radius, rect.getHeight() - 2*radius);
+
+        sr.arc(rect.getX() + radius, rect.getY() + radius, radius, 180f, 90f);
+        sr.arc(rect.getX() + rect.getWidth() - radius, rect.getY() + radius, radius, 270f, 90f);
+        sr.arc(rect.getX() + rect.getWidth() - radius, rect.getY() + rect.getHeight() - radius, radius, 0f, 90f);
+        sr.arc(rect.getX() + radius, rect.getY() + rect.getHeight() - radius, radius, 90f, 90f);
+    }
+}

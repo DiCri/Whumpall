@@ -43,6 +43,7 @@ import java.util.Optional;
 import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.Screens.CreateScreen;
 import it.manueldicriscito.whumpall.Screens.LevelListScreen;
+import it.manueldicriscito.whumpall.Screens.MainScreen;
 import it.manueldicriscito.whumpall.Screens.PlayScreen;
 
 public class Whumpall extends Game {
@@ -135,8 +136,8 @@ public class Whumpall extends Game {
 
 		Assets.load();
 
-		setScreen(new LevelListScreen(this));
-
+		//setScreen(new LevelListScreen(this));
+		setScreen(new MainScreen(this));
 	}
 
 	public static JsonValue readData() {
