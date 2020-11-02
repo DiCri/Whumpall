@@ -3,7 +3,6 @@ package it.manueldicriscito.whumpall.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,17 +11,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import it.manueldicriscito.whumpall.AnimationTypes.Circ;
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
-import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.DiCriTimer;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Level;
@@ -41,10 +36,7 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
-import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
 import static it.manueldicriscito.whumpall.Whumpall.playerLine;
-import static it.manueldicriscito.whumpall.Whumpall.readData;
-import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
 
 
 public class PlayScreen implements Screen, InputProcessor {
@@ -56,20 +48,20 @@ public class PlayScreen implements Screen, InputProcessor {
 
     private int gameState;
     private boolean tap = false;
-    private int lv;
+    private final int lv;
 
-    private Whumpall game;
-    private GlyphLayout glyphLayout = new GlyphLayout();
-    private LevelRenderer lr;
-    private Level level;
+    private final Whumpall game;
+    private final GlyphLayout glyphLayout = new GlyphLayout();
+    private final LevelRenderer lr;
+    private final Level level;
 
-    private DiCriTimer gsTimer;
-    private Image bigCircle;
+    private final DiCriTimer gsTimer;
+    private final Image bigCircle;
 
-    private Animations.AnimatableFloat labelLevelCompletedAlpha = new Animations.AnimatableFloat(0);
-    private Animations.AnimatableFloat labelAttemptsAlpha = new Animations.AnimatableFloat(0);
-    private Animations.AnimatableFloat labelBlocksPlacedAlpha = new Animations.AnimatableFloat(0);
-    private Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelLevelCompletedAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelAttemptsAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelBlocksPlacedAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
 
     Map<String, CircleButton> cbtn = new HashMap<>();
     boolean testCoords = false;
@@ -133,12 +125,21 @@ public class PlayScreen implements Screen, InputProcessor {
         cb.pos = new Vector2(1080f/2, 600);
         cbtn.put("next", new CircleButton(cb));
 
+        cb.pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
+        cb.size.set(70); cb.setSizes(70, 80);
+        cb.color.set(Assets.Colors.get("darkBlue"));
+        cb.shadowColor.set(Color.WHITE);
+        cb.defaultColor.set(Assets.Colors.get("darkBlue"));
+        cb.tapColor.set(Assets.Colors.get("darkerBlue"));
+        cb.texture = Assets.Textures.get("pause");
+        cb.textureSize = 70;
+        cbtn.put("pause", new CircleButton(cb));
+
+
         if(lv==-1) {
             cb.texture = Assets.Textures.get("edit");
-            cb.pos.set(getScreenRight(game.cam) - 100, getScreenTop(game.cam) - 100);
-            cb.size.set(70);
-            cb.dSize = 70;
-            cb.hSize = 80;
+            cb.pos.set(getScreenRight(game.cam) - 300, getScreenTop(game.cam) - 100);
+            cb.size.set(70); cb.setSizes(70, 80);
             cb.color.set(Assets.Colors.get("darkBlue"));
             cb.shadowColor.set(Color.WHITE);
             cb.defaultColor.set(Assets.Colors.get("darkBlue"));
@@ -169,7 +170,6 @@ public class PlayScreen implements Screen, InputProcessor {
 
         lr.render();
         if(lv==-1) playerLine.add(new Vector2(level.player.pos));
-
 
         bigCircle.arect.height = bigCircle.arect.width;
         bigCircle.render(game.batch);
@@ -281,7 +281,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
         //buttons
 
-        if(lv==-1) cbtn.get("edit").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
+        if(lv==-1) cbtn.get("edit").pos.set(getScreenRight(game.cam)-275, getScreenTop(game.cam)-100);
         boolean btnTouch = false;
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
@@ -346,8 +346,7 @@ public class PlayScreen implements Screen, InputProcessor {
                 gameState = GAME_PLAY;
                 level.gameState = GAME_PLAY;
                 level.player.resume();
-            } else if(gameState==GAME_FINISH) {
-            } else {
+            } else if(gameState!=GAME_FINISH) {
                 if(level.pads.size()<level.maxPads && level.getManaUsed()<level.maxMana) {
                     Platform p = new Platform();
                     p.rect.set(new Rectangle(touchPos.x, touchPos.y-20, 0, 40));

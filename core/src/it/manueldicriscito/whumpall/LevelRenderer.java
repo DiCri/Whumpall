@@ -21,6 +21,7 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
+import static it.manueldicriscito.whumpall.Whumpall.playerLine;
 
 public class LevelRenderer {
     private Level level;
@@ -214,26 +215,65 @@ public class LevelRenderer {
     }
     private void renderPad(Platform p) {
         Color down,up;
-        switch(p.dir) {
-            case PAD_DIR_FINISH:
-                down = Assets.Colors.get("shadow");
-                up = Assets.Colors.get("shadow");
-                break;
-            default:
-                down = Assets.Colors.get("darkBlue");
-                up = Assets.Colors.get("darkerBlue");
+        // change "if" with "switch" when needed
+        if (p.dir == PAD_DIR_FINISH) {
+            down = Assets.Colors.get("shadow");
+            up = Assets.Colors.get("shadow");
+        } else {
+            down = Assets.Colors.get("darkBlue");
+            up = Assets.Colors.get("darkerBlue");
         }
+        short upp;
+        if(p.upperPiece==null) upp = 0; else upp = (short)p.upperPiece.get();
+
         sr.setColor(down.r, down.g, down.b, p.added?1f:0.75f);
-        sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
-        if(p.fixed && p.added) {
-            sr.setColor(up);
-            if(p.type==PAD_TYPE_HORIZONTAL) {
-                sr.rect(p.rect.x, p.rect.y + p.rect.height / 2, p.rect.width, p.rect.height / 2);
-            } else {
-                sr.rect(p.rect.x, p.rect.y, p.rect.width/2, p.rect.height);
-            }
+
+        // lines under the pad
+        if(p.superJump) {
+            sr.rectLine(p.rect.x + 25, p.rect.y + 10, p.rect.x + 25, p.rect.y + 30 + upp, 15);
+            sr.rectLine(p.rect.x + p.rect.width - 25, p.rect.y + 10, p.rect.x + p.rect.width - 25, p.rect.y + 10 + 20 + upp, 15);
         }
+        sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height/2);
+        if(p.fixed) {
+            if(p.added) {
+                sr.setColor(up);
+                if(p.type==PAD_TYPE_HORIZONTAL) {
+                    sr.rect(p.rect.x, p.rect.y + p.rect.height / 2 + upp, p.rect.width, p.rect.height / 2);
+                } else {
+                    sr.rect(p.rect.x, p.rect.y, p.rect.width/2, p.rect.height);
+                }
+            }
+        } else sr.rect(p.rect.x, p.rect.y+20, p.rect.width, p.rect.height/2);
         sr.rect(p.rect.x, p.rect.y-20, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.Colors.get("playerShadow"), Assets.Colors.get("playerShadow"));
+
+        if(p.superJump) {
+            sr.setColor(up);
+            sr.rect(p.rect.x, p.rect.y, 40, 20);
+            sr.rect(p.rect.x, p.rect.y+20+upp, 40, 20);
+            sr.rect(p.rect.x+p.rect.width-40, p.rect.y, 40, 20);
+            sr.rect(p.rect.x+p.rect.width-40, p.rect.y+20+upp, 40, 20);
+
+            sr.setColor(down);
+            sr.circle(p.rect.x+10, p.rect.y+10, 2.5f);
+            sr.circle(p.rect.x+10, p.rect.y+30+upp, 2.5f);
+            sr.circle(p.rect.x+p.rect.width-10, p.rect.y+10, 2.5f);
+            sr.circle(p.rect.x+p.rect.width-10, p.rect.y+30+upp, 2.5f);
+            sr.rectLine(p.rect.x+10, p.rect.y+10, p.rect.x+10, p.rect.y+30+upp, 5);
+            sr.rectLine(p.rect.x+p.rect.width-10, p.rect.y+10,p.rect.x+p.rect.width-10, p.rect.y+30+upp,5);
+        }
+        /*sr.setColor(Color.WHITE);
+        sr.rect(p.rect.x+10, p.rect.y, 20, 20);
+        sr.triangle(
+                p.rect.x, p.rect.y+20+upp,
+                p.rect.x+20, p.rect.y+40+upp,
+                p.rect.x+40, p.rect.y+20+upp
+        );
+        sr.rect(p.rect.x+p.rect.width-30, p.rect.y, 20, 20);
+        sr.triangle(
+                p.rect.x+p.rect.width-40, p.rect.y+20+upp,
+                p.rect.x+p.rect.width-20, p.rect.y+40+upp,
+                p.rect.x+p.rect.width, p.rect.y+20+upp
+        );*/
     }
     private void renderPads() {
         Gdx.gl.glEnable(GL20.GL_BLEND);

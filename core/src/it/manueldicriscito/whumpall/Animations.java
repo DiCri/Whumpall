@@ -280,6 +280,7 @@ public class Animations {
                 for(int k = 0; k<anims.size(); k++) {
                     if(anims.get(k).var==new_animation.var) {
                         anims.remove(k);
+                        k--;
                     }
                 }
                 break;
@@ -289,6 +290,7 @@ public class Animations {
                         ((AnimatableFloat)anims.get(k).var).set(anims.get(k).to);
                         if(anims.get(k).move==AnimationMove.by) ((AnimatableFloat)anims.get(k).var).set(anims.get(k).b+anims.get(k).c);
                         anims.remove(k);
+                        k--;
                     }
                 }
                 break;
@@ -300,7 +302,6 @@ public class Animations {
                             break;
                         }
                 }
-
                 break;
         }
         anims.add(new_animation);

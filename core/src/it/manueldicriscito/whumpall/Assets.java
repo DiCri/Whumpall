@@ -56,6 +56,7 @@ public class Assets {
         Textures.put("save", loadTexture("save.png"));
         Textures.put("load", loadTexture("load.png"));
         Textures.put("play", loadTexture("play.png"));
+        Textures.put("pause", loadTexture("pause.png"));
         Textures.put("next", loadTexture("play.png"));
         Textures.put("back", loadTexture("list.png"));
         Textures.put("edit", loadTexture("edit-option.png"));

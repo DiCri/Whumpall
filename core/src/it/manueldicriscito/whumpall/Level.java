@@ -296,7 +296,6 @@ public class Level {
             }
         }
         if(p.type==PAD_TYPE_HORIZONTAL && player.getRight() > p.getLeft() && player.getLeft() < p.getRight()) {
-
             if (player.getOldTop() <= p.getBottom() && player.getTop() > p.getBottom()) {
                 //up
                 if(gameState==GAME_PLAY) {
@@ -332,6 +331,7 @@ public class Level {
             }
             if (player.getOldBottom() > p.getTop() && player.getBottom() <= p.getTop()) {
                 //jump
+
                 if(gameState==GAME_PLAY) {
                     p.fall();
                     p.add();
@@ -356,7 +356,12 @@ public class Level {
                             5000
                     );
                     spawnPadTouchLine(player, p, PADTOUCH_TOP);
-                    player.jump();
+                    if(p.superJump) {
+                        player.superJump(1.5f);
+                        p.triggerSuperJump();
+                    } else {
+                        player.jump();
+                    }
                     player.gravity*=p.gravityChange;
 
                 } else {

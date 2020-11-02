@@ -25,6 +25,8 @@ public class Platform {
     private int gravity;
     public int gravityChange;
 
+    public boolean superJump;
+    public Animations.AnimatableFloat upperPiece;
 
     public Platform() {
         rect = new Rectangle();
@@ -35,6 +37,11 @@ public class Platform {
         gravity = 1500;
         fixed = false;
         gravityChange = 1;
+        superJump = false;
+    }
+    public void activateSuperJump() {
+        superJump = true;
+        upperPiece = new Animations.AnimatableFloat(0);
     }
     public void update(float delta) {
         if(added) {
@@ -87,6 +94,23 @@ public class Platform {
     }
     public void makeAnimatable() {
         arect = new Animations.AnimatableRectangle(rect);
+    }
+    public void triggerSuperJump() {
+        Animations.animate(
+                Animations.AnimationEase.out,
+                Animations.AnimationTiming.Elastic,
+                Animations.AnimationAction.endPrev,
+                this.upperPiece,
+                Animations.AnimationMove.to,
+                20, false, 200, 0);
+        Animations.animate(
+                Animations.AnimationEase.inOut,
+                Animations.AnimationTiming.Back,
+                Animations.AnimationAction.waitPrev,
+                this.upperPiece,
+                Animations.AnimationMove.to,
+                0, false, 1000, 0);
+
     }
 }
 

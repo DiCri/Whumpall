@@ -14,6 +14,7 @@ public class PlatformData implements Serializable {
     public int type;
     public boolean fixed;
     public int gravityChange;
+    public boolean superJump;
 
     public PlatformData(Platform p) {
         dir = p.dir;
@@ -21,6 +22,7 @@ public class PlatformData implements Serializable {
         type = p.type;
         fixed = p.fixed;
         gravityChange = p.gravityChange;
+        superJump = p.superJump;
     }
     public PlatformData(JsonValue root) {
         this.dir = root.getInt("dir");
@@ -34,5 +36,8 @@ public class PlatformData implements Serializable {
         this.type = root.getInt("type");
         this.fixed = root.getBoolean("fixed");
         this.gravityChange = root.getInt("gravityChange");
+        if(root.has("superJump")) {
+            this.superJump = root.getBoolean("superJump");
+        } else superJump = false;
     }
 }

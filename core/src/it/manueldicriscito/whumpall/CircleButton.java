@@ -67,6 +67,10 @@ public class CircleButton {
         hasShadow = true;
         alpha = 1f;
     }
+    public void setSizes(int dSize, int hSize) {
+        this.dSize = dSize;
+        this.hSize = hSize;
+    }
     public void toggleShadow() {
         hasShadow = !hasShadow;
     }

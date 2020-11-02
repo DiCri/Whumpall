@@ -36,6 +36,13 @@ public class Player {
             if(vel.y<j) vel.y = j;
         }
     }
+    void superJump(float mul) {
+        if(gravity>0) {
+            vel.y = -j*mul;
+        } else {
+            vel.y = j*mul;
+        }
+    }
     private void handleInput() {
 
     }

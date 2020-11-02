@@ -65,7 +65,7 @@ public class MainScreen implements Screen {
         playButton.tapColor.set(Assets.Colors.get("darkerBlue"));
         playButton.shadowColor.set(Color.WHITE);
         playButton.textureSize = 180;
-        playButton.pos = new Vector2(1080/2f, 1050);
+        playButton.pos = new Vector2(1080/2f, 1050); 
         playButton_player = new AroundPoint();
         playButton_player.angle = 0f;
         playButton_player.point = playButton.pos;

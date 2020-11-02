@@ -43,6 +43,7 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
+import static it.manueldicriscito.whumpall.Whumpall.playerLine;
 import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
 
 
@@ -105,18 +106,18 @@ public class CreateScreen implements Screen, InputProcessor {
     boolean tap = false;
     int lv;
 
-    private Whumpall game;
-    private GlyphLayout glyphLayout = new GlyphLayout();
+    private final Whumpall game;
+    private final GlyphLayout glyphLayout = new GlyphLayout();
     private LevelRenderer lr;
     private Level level;
 
-    private DiCriTimer gsTimer;
-    private Image bigCircle;
+    private final DiCriTimer gsTimer;
+    private final Image bigCircle;
 
-    private Animations.AnimatableFloat labelLevelCompletedAlpha = new Animations.AnimatableFloat(0);
-    private Animations.AnimatableFloat labelAttemptsAlpha = new Animations.AnimatableFloat(0);
-    private Animations.AnimatableFloat labelBlocksPlacedAlpha = new Animations.AnimatableFloat(0);
-    private Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelLevelCompletedAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelAttemptsAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelBlocksPlacedAlpha = new Animations.AnimatableFloat(0);
+    private final Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
 
     private Vector3 touchPos = new Vector3();
 
@@ -237,6 +238,10 @@ public class CreateScreen implements Screen, InputProcessor {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
+        game.sr.setColor(Color.BLACK);
+        if(lv==-1) for(int k=0; k<playerLine.size()-1; k++) {
+            game.sr.rectLine(playerLine.get(k), playerLine.get(k+1), 6);
+        }
         game.sr.setColor(1,1,1,0.15f);
         game.sr.rect(0, 0, 1080, 1920);
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
@@ -316,7 +321,7 @@ public class CreateScreen implements Screen, InputProcessor {
                 switch(entry.getKey()) {
                     case "play":
                         game.setScreen(new PlayScreen(game, -1, new Level(new LevelData(level))));
-                        break;
+                        return;
                     case "save":
                         Gdx.input.getTextInput(new SaveLevelInputListener(), "Set level name", "", "Untitled");
                         break;
@@ -366,9 +371,7 @@ public class CreateScreen implements Screen, InputProcessor {
                             }
                         }
                     } else if (editorMode == EDITOR_FINAL) {
-                        Iterator<Platform> i = level.lpads.iterator();
-                        while (i.hasNext()) {
-                            Platform p = i.next();
+                        for (Platform p : level.lpads) {
                             if (p.rect.contains(touchPos.x, touchPos.y)) {
                                 for (Platform lp : level.lpads) {
                                     lp.dir = PAD_DIR_NONE;
