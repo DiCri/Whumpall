@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import java.awt.Shape;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +68,9 @@ public class PlayScreen implements Screen, InputProcessor {
     boolean testCoords = false;
 
     private Vector3 touchPos = new Vector3();
+    Animations.AnimatableFloat pauseBlackBackground = new Animations.AnimatableFloat(0f);
+
+    boolean gamePause;
 
     public PlayScreen(Whumpall game, int lv) {
         this(game, lv, null);
@@ -163,7 +167,11 @@ public class PlayScreen implements Screen, InputProcessor {
     @Override
     public void render (float delta) {
 
-        update(delta);
+        if(!gamePause) {
+            update(delta);
+        } else {
+            updatePause(delta);
+        }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
@@ -238,6 +246,8 @@ public class PlayScreen implements Screen, InputProcessor {
         game.sr.begin(ShapeRenderer.ShapeType.Filled);
         game.sr.setColor(0, 0, 0, level.darkDisplay.get());
         game.sr.rect(getScreenLeft(game.cam), getScreenBottom(game.cam), 1080, getScreenTop(game.cam)-getScreenBottom(game.cam));
+        game.sr.setColor(0, 0, 0, this.pauseBlackBackground.get());
+        game.sr.rect(getScreenLeft(game.cam), getScreenBottom(game.cam), 1080, getScreenTop(game.cam)-getScreenBottom(game.cam));
         game.sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         if(level.darkDisplay.get()==1f) {
@@ -271,7 +281,16 @@ public class PlayScreen implements Screen, InputProcessor {
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");
     }
+    private void updatePause(float delta) {
+        game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Animations.run();
 
+
+
+        game.cam.update();
+        game.sr.setProjectionMatrix(game.cam.combined);
+        game.batch.setProjectionMatrix(game.cam.combined);
+    }
 
     private void update(float delta) {
         level.update(delta, game.cam);
@@ -282,11 +301,16 @@ public class PlayScreen implements Screen, InputProcessor {
         //buttons
 
         if(lv==-1) cbtn.get("edit").pos.set(getScreenRight(game.cam)-275, getScreenTop(game.cam)-100);
+        cbtn.get("pause").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
         boolean btnTouch = false;
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
                 switch(entry.getKey()) {
+                    case "pause":
+                        gamePause = !gamePause;
+                        Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,this.pauseBlackBackground,Animations.AnimationMove.to,0.45f, false, 200, 0);
+                        break;
                     case "back":
                         game.setScreen(new LevelListScreen(game));
                         break;
@@ -394,6 +418,7 @@ public class PlayScreen implements Screen, InputProcessor {
         game.sr.setProjectionMatrix(game.cam.combined);
         game.batch.setProjectionMatrix(game.cam.combined);
     }
+
     @Override
     public void resize(int width, int height) {
         game.port.update(width, height);

@@ -33,23 +33,10 @@ public class Animations {
         Back, Bounce, Circ, Cubic, Elastic, Expo, Linear, Quad, Quart, Quint, Sine;
     }
 
-    public static final int EASE_OUT = 0x1;
-    public static final int EASE_IN = 0x2;
-    public static final int EASE_INOUT = 0x3;
-
-    public static final int WAIT_PREV_ANIM = 0x4;
-    public static final int END_PREV_ANIM = 0x8;
-    public static final int FORCE_ANIM = 0x10;
-
-    private static final boolean PIXELS = false;
-    private static final boolean PERCENT = true;
-
-    private static final boolean MOVE_BY = false;
-    private static final boolean MOVE_TO = true;
-
-    private static List<animclass> anims = new ArrayList<animclass>();
-
+    private static final List<animclass> anims = new ArrayList<animclass>();
+    private static int idCounter = 0;
     private static class animclass {
+        int id;
         Object var;
         AnimationEase ease;
         AnimationTiming timing;
@@ -89,7 +76,6 @@ public class Animations {
         public void div(float num) {
             this.num/=num;
         }
-
     }
     public static class AnimatableColor {
         AnimatableFloat r;
@@ -241,14 +227,21 @@ public class Animations {
             } else if(anims.get(k).pause) anims.get(k).pause_delay = (int)System.currentTimeMillis()-anims.get(k).pause_time;
         }
     }
-
-    public static void animate(AnimationEase easing,
+    public static void pause(int id) {
+        for(animclass a : anims) if(a.id==id) a.pause = true;
+    }
+    public static void resume(int id) {
+        for(animclass a : anims) if(a.id==id) a.pause = false;
+    }
+    public static int animate(AnimationEase easing,
                                AnimationTiming timing,
                                AnimationAction action,
                                AnimatableFloat var,
                                AnimationMove move,
                                float to, boolean moveByPercentage, int ms, int delay) {
+        if(var==null) var = new AnimatableFloat(0f);
         animclass new_animation = new animclass();
+        new_animation.id = idCounter; idCounter++;
         new_animation.pause = false;
         new_animation.pause_time = 0;
         new_animation.pause_delay = 0;
@@ -323,6 +316,6 @@ public class Animations {
                 }
             }
         }
-
+        return new_animation.id;
     }
 }
