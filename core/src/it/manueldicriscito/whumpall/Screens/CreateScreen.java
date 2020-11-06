@@ -98,6 +98,7 @@ public class CreateScreen implements Screen, InputProcessor {
     public static final int EDITOR_DELETE = 1;
     public static final int EDITOR_MOVE = 2;
     public static final int EDITOR_FINAL = 3;
+    public static final int EDITOR_SELECT = 4;
     int editorMode = -1;
     boolean movingPlayer = false;
 
@@ -199,6 +200,10 @@ public class CreateScreen implements Screen, InputProcessor {
         cb.texture = Assets.Textures.get("final");
         cbtn.put("final", new CircleButton(cb));
 
+        cb.pos.set(getScreenLeft(game.cam)+850, getScreenBottom(game.cam)+100);
+        cb.texture = Assets.Textures.get("padtype_horizontal");
+        cbtn.put("superJump", new CircleButton(cb));
+
         cb.holdDown = false;
         cb.pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("padtype_horizontal");
@@ -294,6 +299,7 @@ public class CreateScreen implements Screen, InputProcessor {
         cbtn.get("move").pos.set(getScreenLeft(game.cam)+400, getScreenBottom(game.cam)+100);
         cbtn.get("final").pos.set(getScreenLeft(game.cam)+550, getScreenBottom(game.cam)+100);
         cbtn.get("padtype").pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
+        cbtn.get("superJump").pos.set(getScreenLeft(game.cam)+850, getScreenBottom(game.cam)+100);
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
@@ -310,6 +316,9 @@ public class CreateScreen implements Screen, InputProcessor {
                             break;
                         case "final":
                             editorMode = EDITOR_FINAL;
+                            break;
+                        case "superJump":
+                            editorMode = EDITOR_SELECT;
                             break;
                     }
                     for(Map.Entry<String, CircleButton> antry : cbtn.entrySet()) {
@@ -377,6 +386,12 @@ public class CreateScreen implements Screen, InputProcessor {
                                     lp.dir = PAD_DIR_NONE;
                                 }
                                 p.dir = PAD_DIR_FINISH;
+                            }
+                        }
+                    } else if(editorMode == EDITOR_SELECT) {
+                        for (Platform p : level.lpads) {
+                            if(p.rect.contains(touchPos.x, touchPos.y)) {
+                                p.superJump = true;
                             }
                         }
                     }

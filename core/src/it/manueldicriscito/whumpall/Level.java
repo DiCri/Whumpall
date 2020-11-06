@@ -76,6 +76,7 @@ public class Level {
             new_pad.fixed = pd.fixed;
             new_pad.dir = pd.dir;
             new_pad.type = pd.type;
+            new_pad.superJump = pd.superJump;
             new_pad.add();
             lpads.add(new_pad);
         }
@@ -101,79 +102,6 @@ public class Level {
         } else {
             this.generateLevel(loadLevel(Integer.toString(level)));
         }
-        /*
-        if(level==1) {
-            Platform new_pad;
-            GravityZone new_gzone;
-
-            new_pad = new Platform();
-            new_pad.rect.set(100, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(700, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_FINISH;
-            new_pad.add();
-            lpads.add(new_pad);
-
-
-            initPos.x = 100;
-            initPos.y = 1220;
-            initJump = 750;
-            initGrav = 1500;
-            initSpeed.x = 300;
-            initSpeed.y = -50;
-            maxMana = 200;
-            maxPads = 1;
-        } else if(level==2) {
-            Platform new_pad;
-            GravityZone new_gzone;
-
-            new_pad = new Platform();
-            new_pad.rect.set(100, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(400, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(1000, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_FINISH;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            new_pad = new Platform();
-            new_pad.rect.set(-500, 1020, 250, 40);
-            new_pad.fixed = true;
-            new_pad.dir = PAD_DIR_NONE;
-            new_pad.add();
-            lpads.add(new_pad);
-
-            initPos.x = 100;
-            initPos.y = 1220;
-            initJump = 750;
-            initGrav = 1500;
-            initSpeed.x = 300;
-            initSpeed.y = -50;
-            maxMana = 200;
-            maxPads = 100;
-        }
-
-         */
-
-
 
     }
     public void generateLevel(LevelData levelData) {

@@ -25,7 +25,7 @@ public class Platform {
     private int gravity;
     public int gravityChange;
 
-    public boolean superJump;
+    public boolean superJump = false;
     public Animations.AnimatableFloat upperPiece;
 
     public Platform() {
@@ -96,6 +96,8 @@ public class Platform {
         arect = new Animations.AnimatableRectangle(rect);
     }
     public void triggerSuperJump() {
+        if(upperPiece==null) activateSuperJump();
+        Gdx.app.debug("Platform", "Animations triggered");
         Animations.animate(
                 Animations.AnimationEase.out,
                 Animations.AnimationTiming.Elastic,

@@ -67,6 +67,9 @@ public class CircleButton {
         hasShadow = true;
         alpha = 1f;
     }
+    public void setPosition(float x, float y) {
+        this.pos.set(x, y);
+    }
     public void setSizes(int dSize, int hSize) {
         this.dSize = dSize;
         this.hSize = hSize;

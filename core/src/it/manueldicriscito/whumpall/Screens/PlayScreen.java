@@ -195,12 +195,7 @@ public class PlayScreen implements Screen, InputProcessor {
                 || entry.getKey().equals("retry")) {
                 if(bigCircle.arect.getWidth()>1920) entry.getValue().drawCircle(game.sr);
             } else {
-                if(!"pause".equals(entry.getKey()) || !gamePause) {
-                    if(!"resume".equals(entry.getKey()) || gamePause) {
-                        entry.getValue().drawCircle(game.sr);
-                    }
-                }
-
+                if(!"resume".equals(entry.getKey())) entry.getValue().drawCircle(game.sr);
             }
         }
 
@@ -212,11 +207,7 @@ public class PlayScreen implements Screen, InputProcessor {
                     || entry.getKey().equals("retry")) {
                 if(bigCircle.arect.getWidth()>1920) entry.getValue().drawTexture(game.batch);
             } else {
-                if(!"pause".equals(entry.getKey()) || !gamePause) {
-                    if(!"resume".equals(entry.getKey()) || gamePause) {
-                        entry.getValue().drawTexture(game.batch);
-                    }
-                }
+                if(!"resume".equals(entry.getKey())) entry.getValue().drawTexture(game.batch);
             }
         }
         BitmapFont bmfont = Assets.Fonts.get("KoHoRegular100");
@@ -287,8 +278,19 @@ public class PlayScreen implements Screen, InputProcessor {
             game.sr.rectLine(getScreenLeft(game.cam), touchPos.y, getScreenRight(game.cam), touchPos.y, 2);
             game.sr.rectLine(touchPos.x, getScreenBottom(game.cam), touchPos.x, getScreenTop(game.cam), 2);
         }
-
         game.sr.end();
+
+        if(gamePause) {
+            game.sr.begin(ShapeRenderer.ShapeType.Filled);
+            cbtn.get("resume").drawCircle(game.sr);
+            cbtn.get("edit").drawCircle(game.sr);
+            game.sr.end();
+            game.batch.begin();
+            cbtn.get("resume").drawTexture(game.batch);
+            cbtn.get("edit").drawTexture(game.batch);
+            game.batch.end();
+        }
+
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");
     }
@@ -299,13 +301,18 @@ public class PlayScreen implements Screen, InputProcessor {
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
-                if ("resume".equals(entry.getKey())) {
-                    gamePause = false;
-                    Animations.animate(Animations.AnimationEase.in, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, this.pauseBlackBackground, Animations.AnimationMove.to, 0f, false, 200, 0);
+                switch(entry.getKey()) {
+                    case "resume":
+                        gamePause = false;
+                        Animations.animate(Animations.AnimationEase.in, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, this.pauseBlackBackground, Animations.AnimationMove.to, 0f, false, 200, 0);
+                        break;
+                    case "edit":
+                        gamePause = false;
+                        game.setScreen(new CreateScreen(game, level.levelData, "PlayScreen"));
+                        break;
                 }
             }
         }
-
         game.cam.update();
         game.sr.setProjectionMatrix(game.cam.combined);
         game.batch.setProjectionMatrix(game.cam.combined);
