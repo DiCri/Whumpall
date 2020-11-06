@@ -1,5 +1,6 @@
 package it.manueldicriscito.whumpall;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 
@@ -16,6 +17,7 @@ public class Player {
     private boolean paused;
     float alpha;
     Vector2 offset;
+    boolean dead;
 
     public Player() {
         pos = new Vector2(500, 700);
@@ -27,6 +29,23 @@ public class Player {
         paused = false;
         alpha = 1f;
         offset = new Vector2(0, 0);
+        dead = false;
+    }
+    void die() {
+        if(!dead) {
+            Particles.trigger(
+                    20, pos.x, pos.y,
+                    Range.range(3, 8), Range.range(3, 8),
+                    Range.single(0), Range.single(0),
+                    Range.range(-300, 300),
+                    Range.range(100, 500),
+                    Range.single(1),
+                    Range.range(-2f, -1f),
+                    Range.single(gravity),
+                    Color.WHITE, 2000
+            );
+            dead = true;
+        }
     }
     void jump() {
         vel.y = -(75*vel.y/100);

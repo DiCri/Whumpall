@@ -51,11 +51,14 @@ public class LevelRenderer {
     public void render() {
         renderBackground();
         renderGravityZones();
-        renderPlayer();
-        renderPlayerGuide();
+        if(!level.player.dead) {
+            renderPlayer();
+            renderPlayerGuide();
+        }
         renderPads();
         renderPadTouchLines();
         renderObjects();
+        renderSpikes();
     }
     private void renderGravityZones() {
         this.sr.begin(ShapeRenderer.ShapeType.Filled);
@@ -74,6 +77,37 @@ public class LevelRenderer {
         sr.rect(getScreenLeft(cam), getScreenBottom(cam), getScreenRight(cam)-getScreenLeft(cam), getScreenTop(cam)-getScreenBottom(cam));
         sr.rect(getScreenLeft(cam), getScreenBottom(cam), getScreenRight(cam)-getScreenLeft(cam), 1920f/3, darkColor, darkColor, mainColor, mainColor);
         this.sr.end();
+    }
+    private void renderSpikes() {
+        this.batch.begin();
+        batch.setProjectionMatrix(cam.combined);
+
+        for(Spike s : level.spikes) {
+            batch.setColor(Color.WHITE);
+            batch.draw(Assets.Textures.get("spikeBG"), s.pos.x-s.size/2f, s.pos.y-s.size/2f, s.size, s.size);
+            int border = 8;
+            batch.draw(
+                    Assets.Textures.get("spike"),
+                    s.pos.x-s.size/2f-border/2f, s.pos.y-s.size/2f-border/2f,
+                    s.size/2f+border/2f, s.size/2f+border/2f,
+                    s.size+border, s.size+border,
+                    1, 1,
+                    s.rotation,
+                    0, 0, 400, 400,
+                    false, false
+            );
+            batch.setColor(Assets.Colors.get("darkerBlue"));
+            batch.draw(
+                    Assets.Textures.get("spike"),
+                    s.pos.x-s.size/2f, s.pos.y-s.size/2f,
+                    s.size/2f, s.size/2f,
+                    s.size, s.size,
+                    1, 1,
+                    s.rotation,
+                    0, 0, 400, 400,
+                    false, false);
+        }
+        this.batch.end();
     }
     private void renderObjects() {
         batch.begin();

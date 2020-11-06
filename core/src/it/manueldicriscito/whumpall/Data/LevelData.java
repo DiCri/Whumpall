@@ -9,12 +9,14 @@ import java.util.List;
 
 import it.manueldicriscito.whumpall.Level;
 import it.manueldicriscito.whumpall.Platform;
+import it.manueldicriscito.whumpall.Spike;
 import it.manueldicriscito.whumpall.Whumpall;
 
 import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
 
 public class LevelData implements Serializable {
     public List<PlatformData> lpads;
+    public List<SpikeData> spikes;
     public Vector2 initPos;
     public Vector2 initSpeed;
     public int initJump;
@@ -28,6 +30,7 @@ public class LevelData implements Serializable {
         initSpeed = new Vector2();
         name = "Untitled";
         lpads = new ArrayList<>();
+        spikes = new ArrayList<>();
         initPos.x = 100;
         initPos.y = 1220;
         initJump = 750;
@@ -46,6 +49,10 @@ public class LevelData implements Serializable {
         for(Platform p : level.lpads) {
             lpads.add(new PlatformData(p));
         }
+        spikes = new ArrayList<>();
+        for(Spike s : level.spikes) {
+            spikes.add(new SpikeData(s));
+        }
         initPos = new Vector2(level.initPos);
         initSpeed = new Vector2(level.initSpeed);
         initJump = level.initJump;
@@ -54,16 +61,17 @@ public class LevelData implements Serializable {
         maxMana = level.maxMana;
     }
     public JsonValue getValue(JsonValue root, String key) {
-        try {
-            return root.get(key);
-        } catch(Exception e) {
-            return null;
-        }
+        if(root.has(key)) return root.get(key);
+        return null;
     }
     public LevelData(JsonValue root) {
         lpads = new ArrayList<>();
-        for(JsonValue pad : root.get("lpads")) {
+        if(root.has("lpads")) for(JsonValue pad : root.get("lpads")) {
             lpads.add(new PlatformData(pad));
+        }
+        spikes = new ArrayList<>();
+        if(root.has("spikes")) for(JsonValue spike : root.get("spikes")) {
+            spikes.add(new SpikeData(spike));
         }
         initPos = new Vector2(root.get("initPos").getFloat("x"), root.get("initPos").getFloat("y"));
         initSpeed = new Vector2(root.get("initSpeed").getFloat("x"), root.get("initSpeed").getFloat("y"));

@@ -30,6 +30,7 @@ import it.manueldicriscito.whumpall.Level;
 import it.manueldicriscito.whumpall.LevelRenderer;
 import it.manueldicriscito.whumpall.Platform;
 import it.manueldicriscito.whumpall.Range;
+import it.manueldicriscito.whumpall.Spike;
 import it.manueldicriscito.whumpall.Whumpall;
 import it.manueldicriscito.whumpall.Particles;
 
@@ -99,6 +100,7 @@ public class CreateScreen implements Screen, InputProcessor {
     public static final int EDITOR_MOVE = 2;
     public static final int EDITOR_FINAL = 3;
     public static final int EDITOR_SELECT = 4;
+    public static final int EDITOR_SPIKE = 5;
     int editorMode = -1;
     boolean movingPlayer = false;
 
@@ -204,6 +206,10 @@ public class CreateScreen implements Screen, InputProcessor {
         cb.texture = Assets.Textures.get("padtype_horizontal");
         cbtn.put("superJump", new CircleButton(cb));
 
+        cb.pos.set(getScreenLeft(game.cam)+1100, getScreenBottom(game.cam)+100);
+        cb.texture = Assets.Textures.get("spike");
+        cbtn.put("spike", new CircleButton(cb));
+
         cb.holdDown = false;
         cb.pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("padtype_horizontal");
@@ -300,6 +306,7 @@ public class CreateScreen implements Screen, InputProcessor {
         cbtn.get("final").pos.set(getScreenLeft(game.cam)+550, getScreenBottom(game.cam)+100);
         cbtn.get("padtype").pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
         cbtn.get("superJump").pos.set(getScreenLeft(game.cam)+850, getScreenBottom(game.cam)+100);
+        cbtn.get("spike").pos.set(getScreenLeft(game.cam)+1100, getScreenBottom(game.cam)+100);
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
@@ -319,6 +326,9 @@ public class CreateScreen implements Screen, InputProcessor {
                             break;
                         case "superJump":
                             editorMode = EDITOR_SELECT;
+                            break;
+                        case "spike":
+                            editorMode = EDITOR_SPIKE;
                             break;
                     }
                     for(Map.Entry<String, CircleButton> antry : cbtn.entrySet()) {
@@ -394,6 +404,11 @@ public class CreateScreen implements Screen, InputProcessor {
                                 p.superJump = true;
                             }
                         }
+                    } else if(editorMode == EDITOR_SPIKE) {
+                        Spike s = new Spike();
+                        s.pos.set(touchPos.x, touchPos.y);
+                        s.rotation = 0;
+                        level.spikes.add(s);
                     }
                 }
             }

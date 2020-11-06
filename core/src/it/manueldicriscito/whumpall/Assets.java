@@ -73,6 +73,8 @@ public class Assets {
         Textures.put("padtype_horizontal", loadTexture("pad_type.png"));
         Textures.put("padtype_vertical", loadTexture("pad_type_vertical.png"));
         Textures.put("plus", loadTexture("plus.png"));
+        Textures.put("spike", loadTexture("spike.png"));
+        Textures.put("spikeBG", loadTexture("spike_bg.png"));
 
         //lightBlueColor = new Color(0, 0.678f, 0.710f, 1);
         Colors.put("lightBlue", new Color(0x00adb5ff));

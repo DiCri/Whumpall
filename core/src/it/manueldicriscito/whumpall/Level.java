@@ -11,6 +11,7 @@ import java.util.List;
 
 import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.Data.PlatformData;
+import it.manueldicriscito.whumpall.Data.SpikeData;
 
 import static it.manueldicriscito.whumpall.LevelRenderer.spawnPadTouchLine;
 import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_BOTTOM;
@@ -35,6 +36,7 @@ public class Level {
     public final Player playerGuide;
     public final List<Platform> lpads;
     public final List<Platform> pads;
+    public final List<Spike> spikes;
     public final List<GravityZone> gzones;
     public Vector2 initPos;
     public Vector2 initSpeed;
@@ -62,6 +64,7 @@ public class Level {
     public void resetLevel() {
         lpads.clear();
         pads.clear();
+        spikes.clear();
         respawnPlayer();
         respawnPlayerGuide();
         initPos.set(levelData.initPos);
@@ -80,6 +83,12 @@ public class Level {
             new_pad.add();
             lpads.add(new_pad);
         }
+        for(SpikeData sd : levelData.spikes) {
+            Spike new_spike = new Spike();
+            new_spike.pos.set(sd.pos);
+            new_spike.size = sd.size;
+            spikes.add(new_spike);
+        }
         respawnPlayer();
         respawnPlayerGuide();
     }
@@ -87,6 +96,7 @@ public class Level {
     public void generateLevel(int level) {
         lpads.clear();
         pads.clear();
+        spikes.clear();
         respawnPlayer();
         respawnPlayerGuide();
 
@@ -118,6 +128,7 @@ public class Level {
         playerGuide = new Player();
         lpads = new ArrayList<>();
         pads = new ArrayList<>();
+        spikes = new ArrayList<>();
         gzones = new ArrayList<>();
 
         initPos = new Vector2();
@@ -151,7 +162,8 @@ public class Level {
     public void update(float delta, OrthographicCamera cam) {
         if(gameState!=GAME_FINISH) {
             player.update(delta, cam);
-            if(gameState!=GAME_START && (player.pos.y+player.size/2<=-100 || player.pos.y-player.size/2>=1920+200)) {
+            if(gameState!=GAME_START && ((player.pos.y+player.size/2<=-100 || player.pos.y-player.size/2>=1920+200) || player.dead)) {
+                player.dead = false;
                 this.timer.save("Player Death");
                 gameState = GAME_START;
                 gsTimer.stop();
@@ -182,13 +194,20 @@ public class Level {
                 } else playerGuide.alpha = 150f/255f;
             }
             updatePads(delta);
+            updateSpikes(delta);
             checkPadsCollision(player);
+            checkSpikesCollision(player);
             checkGravityZones(player);
             checkGravityZones(playerGuide);
             if(gameState==GAME_START) {
                 checkPadsCollision(playerGuide);
                 if(gameState!=GAME_START) gameState = GAME_START;
             }
+        }
+    }
+    public void updateSpikes(float delta) {
+        for(Spike s : spikes) {
+            s.update(delta);
         }
     }
     public void updatePads(float delta) {
@@ -211,6 +230,11 @@ public class Level {
             }
         }
         if(!nogz) player.gravity = initGrav;
+    }
+    public void checkSpikeCollision(Player player, Spike s) {
+        if(!player.dead) {
+            if(s.pos.dst(player.pos)<(s.size/2f+player.size/1.5f)) player.die();
+        }
     }
     public void checkPadCollision(Player player, Platform p) {
         if(p.type==PAD_TYPE_VERTICAL && player.getTop()>p.getBottom() && player.getBottom()<p.getTop()) {
@@ -305,6 +329,11 @@ public class Level {
         }
         for(Platform p : lpads) {
             checkPadCollision(player, p);
+        }
+    }
+    public void checkSpikesCollision(Player player) {
+        for(Spike s : spikes) {
+            checkSpikeCollision(player, s);
         }
     }
     public int getManaUsed() {
