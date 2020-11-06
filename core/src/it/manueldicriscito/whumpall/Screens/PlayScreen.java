@@ -139,6 +139,8 @@ public class PlayScreen implements Screen, InputProcessor {
         cb.textureSize = 70;
         cbtn.put("pause", new CircleButton(cb));
 
+        cb.texture = Assets.Textures.get("play");
+        cbtn.put("resume", new CircleButton(cb));
 
         if(lv==-1) {
             cb.texture = Assets.Textures.get("edit");
@@ -193,7 +195,12 @@ public class PlayScreen implements Screen, InputProcessor {
                 || entry.getKey().equals("retry")) {
                 if(bigCircle.arect.getWidth()>1920) entry.getValue().drawCircle(game.sr);
             } else {
-                entry.getValue().drawCircle(game.sr);
+                if(!"pause".equals(entry.getKey()) || !gamePause) {
+                    if(!"resume".equals(entry.getKey()) || gamePause) {
+                        entry.getValue().drawCircle(game.sr);
+                    }
+                }
+
             }
         }
 
@@ -205,7 +212,11 @@ public class PlayScreen implements Screen, InputProcessor {
                     || entry.getKey().equals("retry")) {
                 if(bigCircle.arect.getWidth()>1920) entry.getValue().drawTexture(game.batch);
             } else {
-                entry.getValue().drawTexture(game.batch);
+                if(!"pause".equals(entry.getKey()) || !gamePause) {
+                    if(!"resume".equals(entry.getKey()) || gamePause) {
+                        entry.getValue().drawTexture(game.batch);
+                    }
+                }
             }
         }
         BitmapFont bmfont = Assets.Fonts.get("KoHoRegular100");
@@ -285,7 +296,15 @@ public class PlayScreen implements Screen, InputProcessor {
         game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
         Animations.run();
 
-
+        for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
+            entry.getValue().update(touchPos);
+            if(entry.getValue().justClicked()) {
+                if ("resume".equals(entry.getKey())) {
+                    gamePause = false;
+                    Animations.animate(Animations.AnimationEase.in, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, this.pauseBlackBackground, Animations.AnimationMove.to, 0f, false, 200, 0);
+                }
+            }
+        }
 
         game.cam.update();
         game.sr.setProjectionMatrix(game.cam.combined);
@@ -308,8 +327,12 @@ public class PlayScreen implements Screen, InputProcessor {
             if(entry.getValue().justClicked()) {
                 switch(entry.getKey()) {
                     case "pause":
-                        gamePause = !gamePause;
+                        gamePause = true;
                         Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,this.pauseBlackBackground,Animations.AnimationMove.to,0.45f, false, 200, 0);
+                        break;
+                    case "resume":
+                        gamePause = false;
+                        Animations.animate(Animations.AnimationEase.in, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, this.pauseBlackBackground, Animations.AnimationMove.to, 0f, false, 200, 0);
                         break;
                     case "back":
                         game.setScreen(new LevelListScreen(game));
