@@ -25,14 +25,15 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 
 public class MainScreen implements Screen {
 
-    private Whumpall game;
+    private final Whumpall game;
 
-    private Vector3 touchPos;
+    private final Vector3 touchPos;
     private boolean tap = false;
 
-    private AroundPoint playButton_player;
-    private AroundPoint createButton_player;
-    private class AroundPoint {
+    private final AroundPoint playButton_player;
+    private final AroundPoint createButton_player;
+    private final Animations.AnimatableFloat goToLevelList = new Animations.AnimatableFloat(0);
+    private static class AroundPoint {
         public Vector2 point;
         public float radius;
         float angle;
@@ -47,10 +48,10 @@ public class MainScreen implements Screen {
         }
     }
 
-    private CircleButton playButton;
-    private CircleButton createButton;
+    private final CircleButton playButton;
+    private final CircleButton createButton;
 
-    private Image bigCircle;
+    private final Image bigCircle;
 
     public MainScreen(Whumpall game) {
         this.game = game;
@@ -161,6 +162,14 @@ public class MainScreen implements Screen {
         game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
         playButton.update(touchPos);
         if(playButton.justClicked()) {
+            bigCircle.setRect(new Rectangle(playButton.pos.x, playButton.pos.y, 0, 0));
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width,Animations.AnimationMove.to, 4000, false, 3000, 0);
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().x,Animations.AnimationMove.by,-2000, false, 3000, 0);
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.by,-2000, false, 3000, 0);
+
+            Animations.animate(Animations.AnimationEase.inOut, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, goToLevelList, Animations.AnimationMove.to, 1, false, 0, 500);
+        }
+        if(goToLevelList.get()==1f) {
             game.setScreen(new LevelListScreen(game));
         }
         createButton.update(touchPos);
