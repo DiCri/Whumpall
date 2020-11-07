@@ -42,12 +42,10 @@ import static it.manueldicriscito.whumpall.Whumpall.playerLine;
 
 public class PlayScreen implements Screen, InputProcessor {
     public static final int GAME_START = 0;
-    public static final int GAME_PAUSE = 1;
-    public static final int GAME_PLAY = 2;
-    public static final int GAME_FINISH = 3;
+    public static final int GAME_PLAY = 1;
+    public static final int GAME_FINISH = 2;
+    public static final int GAME_DEATH = 3;
 
-
-    private int gameState;
     private boolean tap = false;
     private final int lv;
 
@@ -252,9 +250,9 @@ public class PlayScreen implements Screen, InputProcessor {
         game.sr.rect(getScreenLeft(game.cam), getScreenBottom(game.cam), 1080, getScreenTop(game.cam)-getScreenBottom(game.cam));
         game.sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
-        if(level.darkDisplay.get()==1f) {
-            this.gameState = GAME_START;
+        if(level.gameState==GAME_DEATH && level.darkDisplay.get()==1f) {
             level.gameState = GAME_START;
+            Gdx.app.debug("gameState", "GAME_START");
             level.respawnPlayer();
             level.respawnPlayerGuide();
             level.pads.clear();
@@ -283,11 +281,11 @@ public class PlayScreen implements Screen, InputProcessor {
         if(gamePause) {
             game.sr.begin(ShapeRenderer.ShapeType.Filled);
             cbtn.get("resume").drawCircle(game.sr);
-            cbtn.get("edit").drawCircle(game.sr);
+            if(lv==-1) cbtn.get("edit").drawCircle(game.sr);
             game.sr.end();
             game.batch.begin();
             cbtn.get("resume").drawTexture(game.batch);
-            cbtn.get("edit").drawTexture(game.batch);
+            if(lv==-1) cbtn.get("edit").drawTexture(game.batch);
             game.batch.end();
         }
 
@@ -349,7 +347,6 @@ public class PlayScreen implements Screen, InputProcessor {
                         break;
                     case "retry":
                         level.resetLevel();
-                        gameState = GAME_START;
                         level.gameState = GAME_START;
                         level.player.pause();
                         Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width,Animations.AnimationMove.to,0, false, 1000, 0);
@@ -370,37 +367,34 @@ public class PlayScreen implements Screen, InputProcessor {
         }
         //buttons
 
-        if (gameState != GAME_FINISH) {
-            if (level.gameState == GAME_FINISH) {
-                gameState = GAME_FINISH;
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("back").size,Animations.AnimationMove.to,100, false, 1500, 2000);
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("retry").size,Animations.AnimationMove.to,100, false, 1500, 2250);
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("next").size,Animations.AnimationMove.to,150, false, 1500, 2500);
-                bigCircle.setRect(new Rectangle(level.player.pos.x, level.player.pos.y, 0, 0));
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width, Animations.AnimationMove.to, 4000, false, 1800, 0);
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().x,Animations.AnimationMove.by,-2000, false, 1800, 0);
-                Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.by,-2000, false, 1800, 0);
-                Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelLevelCompletedAlpha,Animations.AnimationMove.to,1, false, 510, 1000);
-                Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelAttemptsAlpha,Animations.AnimationMove.to,1, false, 300, 1500);
-                Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelBlocksPlacedAlpha,Animations.AnimationMove.to,1, false, 300, 1700);
-                Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelTotalBlocksWidthAlpha,Animations.AnimationMove.to,1, false, 300, 1900);
+        if (level.gameState == GAME_FINISH) {
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("back").size,Animations.AnimationMove.to,100, false, 1500, 2000);
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("retry").size,Animations.AnimationMove.to,100, false, 1500, 2250);
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("next").size,Animations.AnimationMove.to,150, false, 1500, 2500);
+            bigCircle.setRect(new Rectangle(level.player.pos.x, level.player.pos.y, 0, 0));
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().width, Animations.AnimationMove.to, 4000, false, 1800, 0);
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().x,Animations.AnimationMove.by,-2000, false, 1800, 0);
+            Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Expo,Animations.AnimationAction.force,bigCircle.getAnimatableRect().y,Animations.AnimationMove.by,-2000, false, 1800, 0);
+            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelLevelCompletedAlpha,Animations.AnimationMove.to,1, false, 510, 1000);
+            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelAttemptsAlpha,Animations.AnimationMove.to,1, false, 300, 1500);
+            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelBlocksPlacedAlpha,Animations.AnimationMove.to,1, false, 300, 1700);
+            Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,labelTotalBlocksWidthAlpha,Animations.AnimationMove.to,1, false, 300, 1900);
 
-                game.prefs.putInteger("lv"+(lv-1), LEVELSTATE_COMPLETED);
-                if(game.prefs.getInteger("lv"+(lv))==LEVELSTATE_LOCKED) {
-                    game.prefs.putInteger("lv"+(lv), LEVELSTATE_UNLOCKED);
-                }
-                game.prefs.flush();
+            game.prefs.putInteger("lv"+(lv-1), LEVELSTATE_COMPLETED);
+            if(game.prefs.getInteger("lv"+(lv))==LEVELSTATE_LOCKED) {
+                game.prefs.putInteger("lv"+(lv), LEVELSTATE_UNLOCKED);
             }
+            game.prefs.flush();
         }
 
         if (Gdx.input.justTouched() && !btnTouch) {
             tap = true;
-            if (gameState == GAME_START) {
+            if (level.gameState == GAME_START) {
                 level.hideTapToStart();
-                gameState = GAME_PLAY;
                 level.gameState = GAME_PLAY;
+                Gdx.app.debug("gameState", "GAME_PLAY");
                 level.player.resume();
-            } else if(gameState!=GAME_FINISH) {
+            } else if(level.gameState!=GAME_FINISH) {
                 if(level.pads.size()<level.maxPads && level.getManaUsed()<level.maxMana) {
                     Platform p = new Platform();
                     p.rect.set(new Rectangle(touchPos.x, touchPos.y-20, 0, 40));
@@ -408,7 +402,6 @@ public class PlayScreen implements Screen, InputProcessor {
                     p.fixed = false;
                     p.dir = PAD_DIR_NONE;
                     level.pads.add(p);
-
                     level.addingPad = true;
                     globalVars.put("lastTapTime", System.currentTimeMillis());
                 }
@@ -427,7 +420,6 @@ public class PlayScreen implements Screen, InputProcessor {
             }
         } else if (level.addingPad) {
             level.addingPad = false;
-
             Platform p = level.pads.get(level.pads.size()-1);
             p.fix();
             if (!p.added) {

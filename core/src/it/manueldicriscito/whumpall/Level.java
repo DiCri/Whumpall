@@ -18,6 +18,7 @@ import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_BOTTOM;
 import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_LEFT;
 import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_RIGHT;
 import static it.manueldicriscito.whumpall.PadTouchLine.PADTOUCH_TOP;
+import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_DEATH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_FINISH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_PLAY;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
@@ -161,30 +162,38 @@ public class Level {
     }
     public void update(float delta, OrthographicCamera cam) {
         if(gameState!=GAME_FINISH) {
-            player.update(delta, cam);
-            if(gameState!=GAME_START && ((player.pos.y+player.size/2<=-100 || player.pos.y-player.size/2>=1920+200) || player.dead)) {
-                player.dead = false;
-                this.timer.save("Player Death");
-                gameState = GAME_START;
-                gsTimer.stop();
-                gsTimer.start();
-                player.pause();
-                attempts++;
-                totalBlocksWidth.set(0);
-                addingPad = false;
-                Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,this.darkDisplay,Animations.AnimationMove.to,1f, false, 200, 0);
-                Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.waitPrev,this.darkDisplay,Animations.AnimationMove.to,0, false, 200, 300);
-                showTapToStart();
-                Animations.animate(Animations.AnimationEase.in, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, this.totalBlocksWidth, Animations.AnimationMove.to,0, false, 0, 300);
-            } else {
-                if(gsTimer.get()>1500) {
-                    gsTimer.reset();
-                    this.respawnPlayerGuide();
-                    playerGuide.alpha = 1;
+            updatePads(delta);
+            updateSpikes(delta);
+            if(gameState==GAME_PLAY) {
+                checkPadsCollision(player);
+                checkSpikesCollision(player);
+                checkGravityZones(player);
+                player.update(delta, cam);
+                if(player.pos.y+player.size/2<=-100 || player.pos.y-player.size/2>=1920+200) player.die();
+                if(player.dead) {
+                    gameState = GAME_DEATH;
+                    Gdx.app.debug("gameState", "GAME_DEATH");
+                    player.revive();
+                    this.timer.save("Player Death");
+                    gsTimer.stop();
+                    gsTimer.start();
+                    attempts++;
+                    totalBlocksWidth.set(0);
+                    addingPad = false;
+                    Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.force,this.darkDisplay,Animations.AnimationMove.to,1f, false, 200, 0);
+                    Animations.animate(Animations.AnimationEase.in,Animations.AnimationTiming.Linear,Animations.AnimationAction.waitPrev,this.darkDisplay,Animations.AnimationMove.to,0, false, 200, 300);
+                    showTapToStart();
+                    Animations.animate(Animations.AnimationEase.in, Animations.AnimationTiming.Linear, Animations.AnimationAction.force, this.totalBlocksWidth, Animations.AnimationMove.to,0, false, 0, 300);
+                    player.pause();
                 }
+            } else if(gsTimer.get()>1500) {
+                gsTimer.reset();
+                this.respawnPlayerGuide();
+                playerGuide.alpha = 1;
             }
             if(gameState==GAME_START) {
                 playerGuide.update(delta, cam);
+                checkPadsCollision(playerGuide);
                 if(gsTimer.get()>1000) {
                     playerGuide.alpha = 150-(gsTimer.get()-1000)*150/500f;
                     playerGuide.alpha/=255;
@@ -193,16 +202,10 @@ public class Level {
                     playerGuide.alpha/=255;
                 } else playerGuide.alpha = 150f/255f;
             }
-            updatePads(delta);
-            updateSpikes(delta);
-            checkPadsCollision(player);
-            checkSpikesCollision(player);
-            checkGravityZones(player);
+
+
+
             checkGravityZones(playerGuide);
-            if(gameState==GAME_START) {
-                checkPadsCollision(playerGuide);
-                if(gameState!=GAME_START) gameState = GAME_START;
-            }
         }
     }
     public void updateSpikes(float delta) {
@@ -309,7 +312,7 @@ public class Level {
                     );
                     spawnPadTouchLine(player, p, PADTOUCH_TOP);
                     if(p.superJump) {
-                        player.superJump(1.5f);
+                        player.superJump(2f);
                         p.triggerSuperJump();
                     } else {
                         player.jump();

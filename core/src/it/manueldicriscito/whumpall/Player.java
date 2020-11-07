@@ -1,5 +1,6 @@
 package it.manueldicriscito.whumpall;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -45,7 +46,11 @@ public class Player {
                     Color.WHITE, 2000
             );
             dead = true;
+            Gdx.app.debug("player", "Dead");
         }
+    }
+    void revive() {
+        dead = false;
     }
     void jump() {
         vel.y = -(75*vel.y/100);

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_DEATH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
@@ -51,7 +52,7 @@ public class LevelRenderer {
     public void render() {
         renderBackground();
         renderGravityZones();
-        if(!level.player.dead) {
+        if(level.gameState!=GAME_DEATH) {
             renderPlayer();
             renderPlayerGuide();
         }
