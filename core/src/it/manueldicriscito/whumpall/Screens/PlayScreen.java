@@ -55,7 +55,6 @@ public class PlayScreen implements Screen, InputProcessor {
     private final LevelRenderer lr;
     private final Level level;
 
-    private final DiCriTimer gsTimer;
     private final Image bigCircle;
 
     private final Animations.AnimatableFloat labelLevelCompletedAlpha = new Animations.AnimatableFloat(0);
@@ -86,10 +85,8 @@ public class PlayScreen implements Screen, InputProcessor {
         }
         lr = new LevelRenderer(game, this.level);
 
-        gsTimer = new DiCriTimer();
-        this.level.gsTimer = gsTimer;
-        gsTimer.start();
-
+        this.level.gsTimer = new DiCriTimer();
+        this.level.gsTimer.start();
 
         bigCircle = new Image();
         bigCircle.setTexture(Assets.Textures.get("bigCircle"));
@@ -253,7 +250,6 @@ public class PlayScreen implements Screen, InputProcessor {
         Gdx.gl.glDisable(GL20.GL_BLEND);
         if(level.gameState==GAME_DEATH && level.darkDisplay.get()==1f) {
             level.gameState = GAME_START;
-            Gdx.app.debug("gameState", "GAME_START");
             level.respawnPlayer();
             level.respawnPlayerGuide();
             level.pads.clear();
@@ -326,6 +322,7 @@ public class PlayScreen implements Screen, InputProcessor {
         //buttons
 
         if(lv==-1) cbtn.get("edit").pos.set(getScreenRight(game.cam)-275, getScreenTop(game.cam)-100);
+        cbtn.get("resume").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
         cbtn.get("pause").pos.set(getScreenRight(game.cam)-100, getScreenTop(game.cam)-100);
         boolean btnTouch = false;
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
@@ -394,7 +391,6 @@ public class PlayScreen implements Screen, InputProcessor {
             if (level.gameState == GAME_START) {
                 level.hideTapToStart();
                 level.gameState = GAME_PLAY;
-                Gdx.app.debug("gameState", "GAME_PLAY");
                 level.player.resume();
             } else if(level.gameState!=GAME_FINISH) {
                 if(level.pads.size()<level.maxPads && level.getManaUsed()<level.maxMana) {

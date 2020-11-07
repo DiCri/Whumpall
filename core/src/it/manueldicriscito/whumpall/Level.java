@@ -172,7 +172,6 @@ public class Level {
                 if(player.pos.y+player.size/2<=-100 || player.pos.y-player.size/2>=1920+200) player.die();
                 if(player.dead) {
                     gameState = GAME_DEATH;
-                    Gdx.app.debug("gameState", "GAME_DEATH");
                     player.revive();
                     this.timer.save("Player Death");
                     gsTimer.stop();
@@ -259,7 +258,6 @@ public class Level {
                     p.fix();
                     if(p.dir==PAD_DIR_FINISH) {
                         gameState = GAME_FINISH;
-                        Gdx.app.debug("gameState", "GAME_FINISH");
                     }
                 }
                 if(player.gravity>0) {
@@ -296,7 +294,6 @@ public class Level {
                     p.fix();
                     if(p.dir==PAD_DIR_FINISH) {
                         gameState = GAME_FINISH;
-                        Gdx.app.debug("gameState", "GAME_FINISH");
                     }
                 }
                 if(player.gravity>0) {

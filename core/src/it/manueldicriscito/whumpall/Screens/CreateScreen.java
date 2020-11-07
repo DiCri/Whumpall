@@ -201,7 +201,7 @@ public class CreateScreen implements Screen, InputProcessor {
         cb.texture = Assets.Textures.get("padtype_horizontal");
         cbtn.put("superJump", new CircleButton(cb));
 
-        cb.pos.set(getScreenLeft(game.cam)+1100, getScreenBottom(game.cam)+100);
+        cb.pos.set(getScreenLeft(game.cam)+1000, getScreenBottom(game.cam)+100);
         cb.texture = Assets.Textures.get("spike");
         cbtn.put("spike", new CircleButton(cb));
 
@@ -293,7 +293,7 @@ public class CreateScreen implements Screen, InputProcessor {
         cbtn.get("final").pos.set(getScreenLeft(game.cam)+550, getScreenBottom(game.cam)+100);
         cbtn.get("padtype").pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
         cbtn.get("superJump").pos.set(getScreenLeft(game.cam)+850, getScreenBottom(game.cam)+100);
-        cbtn.get("spike").pos.set(getScreenLeft(game.cam)+1100, getScreenBottom(game.cam)+100);
+        cbtn.get("spike").pos.set(getScreenLeft(game.cam)+1000, getScreenBottom(game.cam)+100);
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
@@ -369,12 +369,26 @@ public class CreateScreen implements Screen, InputProcessor {
                         level.lpads.add(p);
                         level.addingPad = true;
                     } else if (editorMode == EDITOR_DELETE) {
-                        Iterator<Platform> i = level.lpads.iterator();
-                        while (i.hasNext()) {
-                            Platform p = i.next();
-                            if (p.rect.contains(touchPos.x, touchPos.y)) {
-                                i.remove();
+                        Iterator<Spike> is = level.spikes.iterator();
+                        Spike sToDel = null;
+                        while(is.hasNext()) {
+                            Spike s = is.next();
+                            if(s.pos.dst(touchPos.x, touchPos.y)<s.size/2f) {
+                                sToDel = s;
                             }
+                        }
+                        if(sToDel!=null) {
+                            level.spikes.remove(sToDel);
+                        } else {
+                            Iterator<Platform> i = level.lpads.iterator();
+                            Platform pToDel = null;
+                            while (i.hasNext()) {
+                                Platform p = i.next();
+                                if (p.rect.contains(touchPos.x, touchPos.y)) {
+                                    pToDel = p;
+                                }
+                            }
+                            if(pToDel!=null) level.lpads.remove(pToDel);
                         }
                     } else if (editorMode == EDITOR_FINAL) {
                         for (Platform p : level.lpads) {
