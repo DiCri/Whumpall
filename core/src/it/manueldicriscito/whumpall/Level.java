@@ -257,7 +257,10 @@ public class Level {
                     p.fall();
                     p.add();
                     p.fix();
-                    if(p.dir==PAD_DIR_FINISH) gameState = GAME_FINISH;
+                    if(p.dir==PAD_DIR_FINISH) {
+                        gameState = GAME_FINISH;
+                        Gdx.app.debug("gameState", "GAME_FINISH");
+                    }
                 }
                 if(player.gravity>0) {
                     player.vel.y = 0;
@@ -291,7 +294,10 @@ public class Level {
                     p.fall();
                     p.add();
                     p.fix();
-                    if(p.dir==PAD_DIR_FINISH) gameState = GAME_FINISH;
+                    if(p.dir==PAD_DIR_FINISH) {
+                        gameState = GAME_FINISH;
+                        Gdx.app.debug("gameState", "GAME_FINISH");
+                    }
                 }
                 if(player.gravity>0) {
                     Particles.trigger(

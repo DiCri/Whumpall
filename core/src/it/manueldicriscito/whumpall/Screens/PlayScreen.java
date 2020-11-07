@@ -45,6 +45,7 @@ public class PlayScreen implements Screen, InputProcessor {
     public static final int GAME_PLAY = 1;
     public static final int GAME_FINISH = 2;
     public static final int GAME_DEATH = 3;
+    public static final int GAME_END = 4;
 
     private boolean tap = false;
     private final int lv;
@@ -368,6 +369,7 @@ public class PlayScreen implements Screen, InputProcessor {
         //buttons
 
         if (level.gameState == GAME_FINISH) {
+            level.gameState = GAME_END;
             Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("back").size,Animations.AnimationMove.to,100, false, 1500, 2000);
             Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("retry").size,Animations.AnimationMove.to,100, false, 1500, 2250);
             Animations.animate(Animations.AnimationEase.out,Animations.AnimationTiming.Back,Animations.AnimationAction.force,cbtn.get("next").size,Animations.AnimationMove.to,150, false, 1500, 2500);

@@ -90,11 +90,6 @@ public class CreateScreen implements Screen, InputProcessor {
         public void canceled () {}
     }
 
-    public static final int GAME_START = 0;
-    public static final int GAME_PAUSE = 1;
-    public static final int GAME_PLAY = 2;
-    public static final int GAME_FINISH = 3;
-
     public static final int EDITOR_BUILD = 0;
     public static final int EDITOR_DELETE = 1;
     public static final int EDITOR_MOVE = 2;
@@ -275,14 +270,6 @@ public class CreateScreen implements Screen, InputProcessor {
         game.sr.rect(getScreenLeft(game.cam), getScreenBottom(game.cam), 1080, getScreenTop(game.cam)-getScreenBottom(game.cam));
         game.sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
-        if(level.darkDisplay.get()==1f) {
-            this.gameState = GAME_START;
-            level.gameState = GAME_START;
-            level.respawnPlayer();
-            level.respawnPlayerGuide();
-            level.pads.clear();
-            level.gsTimer.reset();
-        }
 
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");
