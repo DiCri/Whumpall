@@ -16,6 +16,7 @@ import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_DEATH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
+import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.getAngle;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
@@ -37,7 +38,6 @@ public class LevelRenderer {
     private Vector2 laserEndPos;
 
     public static List<PadTouchLine> ptls = new ArrayList<>();
-
 
     public LevelRenderer(Whumpall game, Level level) {
         this.level = level;
@@ -262,24 +262,33 @@ public class LevelRenderer {
         short upp;
         if(p.upperPiece==null) upp = 0; else upp = (short)p.upperPiece.get();
 
-        sr.setColor(down.r, down.g, down.b, p.added?1f:0.75f);
-
         // lines under the pad
         if(p.superJump) {
             sr.rectLine(p.rect.x + 25, p.rect.y + 10, p.rect.x + 25, p.rect.y + 30 + upp, 15);
             sr.rectLine(p.rect.x + p.rect.width - 25, p.rect.y + 10, p.rect.x + p.rect.width - 25, p.rect.y + 10 + 20 + upp, 15);
         }
-        sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height/2);
+
         if(p.fixed) {
             if(p.added) {
-                sr.setColor(up);
-                if(p.type==PAD_TYPE_HORIZONTAL) {
-                    sr.rect(p.rect.x, p.rect.y + p.rect.height / 2 + upp, p.rect.width, p.rect.height / 2);
-                } else {
-                    sr.rect(p.rect.x, p.rect.y, p.rect.width/2, p.rect.height);
+                switch(p.type) {
+                    case PAD_TYPE_HORIZONTAL:
+                        sr.setColor(up);
+                        sr.rect(p.rect.x, p.rect.y+p.rect.height/2+upp, p.rect.width, p.rect.height/2);
+                        sr.setColor(down);
+                        sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height/2);
+                        break;
+                    case PAD_TYPE_VERTICAL:
+                        sr.setColor(up);
+                        sr.rect(p.rect.x, p.rect.y, p.rect.width/2, p.rect.height);
+                        sr.setColor(down);
+                        sr.rect(p.rect.x+20, p.rect.y, p.rect.width/2, p.rect.height);
+                        break;
                 }
             }
-        } else sr.rect(p.rect.x, p.rect.y+20, p.rect.width, p.rect.height/2);
+        } else {
+            sr.setColor(down.r, down.g, down.b, p.added?1f:0.75f);
+            sr.rect(p.rect.x, p.rect.y, p.rect.width, p.rect.height);
+        }
         sr.rect(p.rect.x, p.rect.y-20, p.rect.width, 20, Color.CLEAR, Color.CLEAR, Assets.Colors.get("playerShadow"), Assets.Colors.get("playerShadow"));
 
         if(p.superJump) {
