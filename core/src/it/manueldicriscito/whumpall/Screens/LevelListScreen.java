@@ -14,12 +14,15 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
 import it.manueldicriscito.whumpall.Data.LevelData;
+import it.manueldicriscito.whumpall.DiCriTimer;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Whumpall;
 
@@ -27,26 +30,25 @@ import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_COMPLETED;
 import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_LOCKED;
 import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
 import static it.manueldicriscito.whumpall.Whumpall.getLevels;
-import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
 
 public class LevelListScreen implements Screen {
-    private Whumpall game;
-    private List<CircleButton> levelButtons;
-    private Vector3 touchPos;
-    private Image bigCircle;
-    private GlyphLayout glyphLayout = new GlyphLayout();
+    private final Whumpall game;
+    private final List<CircleButton> levelButtons;
+    private final Vector3 touchPos;
+    private final Image bigCircle;
+    private final GlyphLayout glyphLayout = new GlyphLayout();
+    private final DiCriTimer timer = new DiCriTimer();
     int level;
-
     List<LevelData> list;
+    Animations.AnimatableFloat titleOffset = new Animations.AnimatableFloat(0f);
 
     public LevelListScreen(Whumpall game) {
         super();
         this.game = game;
         touchPos = new Vector3();
         levelButtons = new ArrayList<>();
-        int levels = 50;
         level = 0;
 
         list = getLevels();
@@ -85,11 +87,26 @@ public class LevelListScreen implements Screen {
                     cb.shadowColor.set(Assets.Colors.get("darkerBlue"));
                     break;
             }
-            cb.size.set(80);
+
+            cb.size.set(0);
             cb.dSize = 80;
             cb.hSize = 90;
             cb.pos.set(getScreenLeft(game.cam)+130+200*(i%5f), getScreenTop(game.cam)-(600+((float)Math.floor(i/5f)*200)));
             levelButtons.add(cb);
+            Animations.animate(
+                    Animations.AnimationEase.out,
+                    Animations.AnimationTiming.Expo,
+                    Animations.AnimationAction.force,
+                    cb.size, Animations.AnimationMove.to,
+                    cb.dSize, false, 1200, i*80
+            );
+            Animations.animate(
+                    Animations.AnimationEase.out,
+                    Animations.AnimationTiming.Back,
+                    Animations.AnimationAction.force,
+                    titleOffset, Animations.AnimationMove.to,
+                    25, false, 1000, 500
+            );
         }
         game.prefs.flush();
 
@@ -103,7 +120,7 @@ public class LevelListScreen implements Screen {
         game.port.update(width, height);
         game.cam.setToOrtho(false, 1080, height*1080f/width);
         game.cam.position.set(540, 960, 0);
-
+        timer.start();
     }
 
     @Override
@@ -124,22 +141,33 @@ public class LevelListScreen implements Screen {
         }
         game.sr.end();
         game.batch.begin();
+
         for(CircleButton cb : levelButtons) {
-            Assets.Fonts.get("Tibitto100").setColor(Assets.Colors.get("darkerBlue"));
+            float alpha = (timer.get()-(150+levelButtons.indexOf(cb)*80))/200f;
+            if(alpha>1f) alpha = 1f;
+            if(cb.size.get()>0f) Assets.Fonts.get("Tibitto100").getData().setScale(cb.size.get()*100/cb.dSize/100);
+            Color darkerBlue = Assets.Colors.get("darkerBlue");
+            Assets.Fonts.get("Tibitto100").setColor(darkerBlue.r, darkerBlue.g, darkerBlue.b, alpha);
             int levelState = game.prefs.getInteger("lv"+levelButtons.indexOf(cb));
             if(levelState==LEVELSTATE_UNLOCKED) {
-                Assets.Fonts.get("Tibitto100").setColor(Color.WHITE);
+                Assets.Fonts.get("Tibitto100").setColor(1, 1, 1, alpha);
             }
+
+            levelButtons.indexOf(cb);
             //String text = Integer.toString(levelButtons.indexOf(cb)+1);
             String text = list.get(levelButtons.indexOf(cb)).name;
             glyphLayout.setText(Assets.Fonts.get("Tibitto100"), text);
             Assets.Fonts.get("Tibitto100").draw(game.batch, text, cb.pos.x-glyphLayout.width/2, cb.pos.y+glyphLayout.height/2);
+
         }
         glyphLayout.setText(Assets.Fonts.get("Tibitto150"), "World 1");
-        Assets.Fonts.get("Tibitto150").setColor(Assets.Colors.get("darkerBlue"));
-        Assets.Fonts.get("Tibitto150").draw(game.batch, "World 1", 1080f/2-glyphLayout.width/2, getScreenTop(game.cam)-200);
-        Assets.Fonts.get("Tibitto150").setColor(Color.WHITE);
-        Assets.Fonts.get("Tibitto150").draw(game.batch, "World 1", 1080f/2-glyphLayout.width/2, getScreenTop(game.cam)-190);
+        float alpha = (timer.get()-500)/200f;
+        alpha = Math.min(alpha, 1f);
+        Color darkerBlue = Assets.Colors.get("darkerBlue");
+        Assets.Fonts.get("Tibitto150").setColor(darkerBlue.r, darkerBlue.g, darkerBlue.b, alpha);
+        Assets.Fonts.get("Tibitto150").draw(game.batch, "World 1", 1080f/2-glyphLayout.width/2, getScreenTop(game.cam)-200-25+titleOffset.get());
+        Assets.Fonts.get("Tibitto150").setColor(1, 1, 1, alpha);
+        Assets.Fonts.get("Tibitto150").draw(game.batch, "World 1", 1080f/2-glyphLayout.width/2, getScreenTop(game.cam)-190-25+titleOffset.get());
         game.batch.end();
 
         bigCircle.arect.height = bigCircle.arect.width;

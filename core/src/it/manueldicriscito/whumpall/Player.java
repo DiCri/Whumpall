@@ -46,7 +46,6 @@ public class Player {
                     Color.WHITE, 2000
             );
             dead = true;
-            Gdx.app.debug("player", "Dead");
         }
     }
     void revive() {

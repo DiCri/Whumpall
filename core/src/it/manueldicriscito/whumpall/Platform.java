@@ -97,7 +97,6 @@ public class Platform {
     }
     public void triggerSuperJump() {
         if(upperPiece==null) activateSuperJump();
-        Gdx.app.debug("Platform", "Animations triggered");
         Animations.animate(
                 Animations.AnimationEase.out,
                 Animations.AnimationTiming.Elastic,

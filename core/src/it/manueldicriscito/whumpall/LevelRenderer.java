@@ -86,7 +86,8 @@ public class LevelRenderer {
         for(Spike s : level.spikes) {
             batch.setColor(Color.WHITE);
             batch.draw(Assets.Textures.get("spikeBG"), s.pos.x-s.size/2f, s.pos.y-s.size/2f, s.size, s.size);
-            int border = 8;
+            int border = 16;
+            batch.setColor(Assets.Colors.get("darkBlue"));
             batch.draw(
                     Assets.Textures.get("spike"),
                     s.pos.x-s.size/2f-border/2f, s.pos.y-s.size/2f-border/2f,
