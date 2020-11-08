@@ -239,94 +239,56 @@ public class Level {
         }
     }
     public void checkPadCollision(Player player, Platform p) {
-        if(p.type==PAD_TYPE_VERTICAL && player.getTop()>p.getBottom() && player.getBottom()<p.getTop()) {
-            if(player.getOldLeft() > p.getRight() && player.getLeft() <= p.getRight()) {
-                player.vel.x = player.vel.x>0?player.vel.x:-player.vel.x;
-                spawnPadTouchLine(player, p, PADTOUCH_RIGHT);
-            }
-            if(player.getOldRight() < p.getLeft() && player.getRight() >= p.getLeft()) {
-                player.vel.x = player.vel.x<0?player.vel.x:-player.vel.x;
-                spawnPadTouchLine(player, p, PADTOUCH_LEFT);
-            }
-        }
-        if(p.type==PAD_TYPE_HORIZONTAL && player.getRight() > p.getLeft() && player.getLeft() < p.getRight()) {
-            if (player.getOldTop() <= p.getBottom() && player.getTop() > p.getBottom()) {
-                //up
-                if(gameState==GAME_PLAY) {
-                    p.fall();
-                    p.add();
-                    p.fix();
-                    if(p.dir==PAD_DIR_FINISH) {
-                        gameState = GAME_FINISH;
+        switch(p.type) {
+            case PAD_TYPE_VERTICAL:
+                if(player.getTop()>p.getBottom() && player.getBottom()<p.getTop()) {
+                    if(player.getOldLeft() > p.getRight() && player.getLeft() <= p.getRight()) {
+                        player.vel.x = player.vel.x>0?player.vel.x:-player.vel.x;
+                        spawnPadTouchLine(player, p, PADTOUCH_RIGHT);
+                    }
+                    if(player.getOldRight() < p.getLeft() && player.getRight() >= p.getLeft()) {
+                        player.vel.x = player.vel.x<0?player.vel.x:-player.vel.x;
+                        spawnPadTouchLine(player, p, PADTOUCH_LEFT);
                     }
                 }
-                if(player.gravity>0) {
-                    player.vel.y = 0;
-                    player.pos.y = p.rect.y - player.size / 2;
-                    spawnPadTouchLine(player, p, PADTOUCH_BOTTOM);
-                } else {
-                    Particles.trigger(
-                            5,
-                            player.pos.x,
-                            player.pos.y,
-                            Range.range(5, 20),
-                            Range.range(5, 20),
-                            Range.single(-20),
-                            Range.single(-20),
-                            Range.range(-200, 200),
-                            Range.range(0, 500),
-                            Range.single(0.5f),
-                            Range.single(-0.4f),
-                            Range.single(1500),
-                            Assets.Colors.get("darkBlue"),
-                            5000
-                    );
-                    player.jump();
-                    player.gravity*=p.gravityChange;
-                }
-            }
-            if (player.getOldBottom() > p.getTop() && player.getBottom() <= p.getTop()) {
-                //jump
-
-                if(gameState==GAME_PLAY) {
-                    p.fall();
-                    p.add();
-                    p.fix();
-                    if(p.dir==PAD_DIR_FINISH) {
-                        gameState = GAME_FINISH;
+                break;
+            case PAD_TYPE_HORIZONTAL:
+                boolean jump = false;
+                boolean ceil = false;
+                if(player.getRight() > p.getLeft() && player.getLeft() < p.getRight()) {
+                    jump = player.getOldBottom() > p.getTop() && player.getBottom() <= p.getTop();
+                    ceil = player.getOldTop() <= p.getBottom() && player.getTop() > p.getBottom();
+                    boolean updown = player.gravity<0;
+                    if(jump||ceil && gameState==GAME_PLAY) {
+                        p.fall();
+                        p.add();
+                        p.fix();
+                        if(p.dir==PAD_DIR_FINISH) gameState = GAME_FINISH;
+                    }
+                    if(jump || (ceil && updown)) {
+                        // jump
+                        Particles.trigger(5, player.pos.x, player.pos.y, Range.range(5, 20), Range.range(5, 20), Range.single(-20), Range.single(-20), Range.range(-200, 200), Range.range(0, 500), Range.single(0.5f), Range.single(-0.4f), Range.single(1500), Assets.Colors.get("darkBlue"), 5000);
+                        spawnPadTouchLine(player, p, updown?PADTOUCH_BOTTOM:PADTOUCH_TOP);
+                        if(p.superJump) {
+                            player.superJump(2f);
+                            p.triggerSuperJump();
+                        } else player.jump();
+                        player.pos.y = updown ? p.rect.y-player.size/2 : p.rect.y+p.rect.height+player.size/2+1;
+                        player.gravity *= p.gravityChange;
+                    }
+                    if(ceil || (jump && updown)) {
+                        // fall
+                        player.vel.y = 0;
+                        player.pos.y = !updown ? p.rect.y-player.size/2 : p.rect.y+p.rect.height+player.size/2;
+                        spawnPadTouchLine(player, p, updown?PADTOUCH_TOP:PADTOUCH_BOTTOM);
                     }
                 }
-                if(player.gravity>0) {
-                    Particles.trigger(
-                            5,
-                            player.pos.x,
-                            player.pos.y,
-                            Range.range(5, 20),
-                            Range.range(5, 20),
-                            Range.single(-20),
-                            Range.single(-20),
-                            Range.range(-200, 200),
-                            Range.range(0, 500),
-                            Range.single(0.5f),
-                            Range.single(-0.4f),
-                            Range.single(1500),
-                            Assets.Colors.get("darkBlue"),
-                            5000
-                    );
-                    spawnPadTouchLine(player, p, PADTOUCH_TOP);
-                    if(p.superJump) {
-                        player.superJump(2f);
-                        p.triggerSuperJump();
-                    } else {
-                        player.jump();
-                    }
-                    player.gravity*=p.gravityChange;
-
-                } else {
-                    player.vel.y = 0;
-                    player.pos.y = p.rect.y + p.rect.height + player.size/2;
+                if((!jump && !ceil) && player.getTop() > p.getBottom() && player.getBottom() < p.getTop()) {
+                    boolean left = player.getOldRight() < p.getLeft() && player.getRight() >= p.getLeft();
+                    boolean right = player.getOldLeft() > p.getRight() && player.getLeft() <= p.getRight();
+                    if(left || right) player.die();
                 }
-            }
+                break;
         }
     }
     public void checkPadsCollision(Player player) {
