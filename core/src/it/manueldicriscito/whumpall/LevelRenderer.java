@@ -60,6 +60,14 @@ public class LevelRenderer {
         renderPadTouchLines();
         renderObjects();
         renderSpikes();
+        renderCoin();
+    }
+    private void renderCoin() {
+        if(level.coin!=null) {
+            batch.begin();
+            level.coin.draw(batch);
+            batch.end();
+        }
     }
     private void renderGravityZones() {
         this.sr.begin(ShapeRenderer.ShapeType.Filled);

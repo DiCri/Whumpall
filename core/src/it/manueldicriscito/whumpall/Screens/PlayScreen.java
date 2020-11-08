@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import java.awt.Shape;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class PlayScreen implements Screen, InputProcessor {
     Map<String, CircleButton> cbtn = new HashMap<>();
     boolean testCoords = false;
 
-    private Vector3 touchPos = new Vector3();
+    private final Vector3 touchPos = new Vector3();
     Animations.AnimatableFloat pauseBlackBackground = new Animations.AnimatableFloat(0f);
 
     boolean gamePause;
@@ -168,7 +167,7 @@ public class PlayScreen implements Screen, InputProcessor {
         if(!gamePause) {
             update(delta);
         } else {
-            updatePause(delta);
+            updatePause();
         }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -235,6 +234,7 @@ public class PlayScreen implements Screen, InputProcessor {
         glyphLayout.setText(bmfont, "tap to start");
         bmfont.setColor(1, 1, 1, 1*level.ttsAlpha.get());
         bmfont.draw(game.batch, "tap to start", getScreenLeft(game.cam)+1080f/2-glyphLayout.width/2, 1200);
+
         game.batch.end();
         // TAP TO START: end
 
@@ -289,7 +289,7 @@ public class PlayScreen implements Screen, InputProcessor {
         Particles.render(game.sr, delta);
         Gdx.graphics.setTitle("Whumpall ["+Gdx.graphics.getFramesPerSecond()+"fps]");
     }
-    private void updatePause(float delta) {
+    private void updatePause() {
         game.cam.unproject(touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
         Animations.run();
 

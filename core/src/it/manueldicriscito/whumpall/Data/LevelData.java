@@ -10,13 +10,11 @@ import java.util.List;
 import it.manueldicriscito.whumpall.Level;
 import it.manueldicriscito.whumpall.Platform;
 import it.manueldicriscito.whumpall.Spike;
-import it.manueldicriscito.whumpall.Whumpall;
-
-import static it.manueldicriscito.whumpall.Whumpall.LEVELSTATE_UNLOCKED;
 
 public class LevelData implements Serializable {
     public List<PlatformData> lpads;
     public List<SpikeData> spikes;
+    public CoinData coin;
     public Vector2 initPos;
     public Vector2 initSpeed;
     public int initJump;
@@ -40,9 +38,6 @@ public class LevelData implements Serializable {
         maxMana = 200;
         maxPads = 1;
     }
-    public LevelData(LevelData levelData) {
-        this(new Level(levelData));
-    }
     public LevelData(Level level) {
         this.name = level.name;
         lpads = new ArrayList<>();
@@ -53,16 +48,13 @@ public class LevelData implements Serializable {
         for(Spike s : level.spikes) {
             spikes.add(new SpikeData(s));
         }
+        if(level.coin!=null) coin = new CoinData(level.coin);
         initPos = new Vector2(level.initPos);
         initSpeed = new Vector2(level.initSpeed);
         initJump = level.initJump;
         initGrav = level.initGrav;
         maxPads = level.maxPads;
         maxMana = level.maxMana;
-    }
-    public JsonValue getValue(JsonValue root, String key) {
-        if(root.has(key)) return root.get(key);
-        return null;
     }
     public LevelData(JsonValue root) {
         lpads = new ArrayList<>();
@@ -73,6 +65,7 @@ public class LevelData implements Serializable {
         if(root.has("spikes")) for(JsonValue spike : root.get("spikes")) {
             spikes.add(new SpikeData(spike));
         }
+        if(root.has("coin")) coin = new CoinData(new Vector2(root.get("pos").getFloat("x"), root.get("pos").getFloat("y")));
         initPos = new Vector2(root.get("initPos").getFloat("x"), root.get("initPos").getFloat("y"));
         initSpeed = new Vector2(root.get("initSpeed").getFloat("x"), root.get("initSpeed").getFloat("y"));
         initJump = root.getInt("initJump");

@@ -4,32 +4,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import it.manueldicriscito.whumpall.Animations;
 import it.manueldicriscito.whumpall.Assets;
 import it.manueldicriscito.whumpall.CircleButton;
+import it.manueldicriscito.whumpall.Coin;
 import it.manueldicriscito.whumpall.Data.LevelData;
 import it.manueldicriscito.whumpall.DiCriTimer;
 import it.manueldicriscito.whumpall.Image;
 import it.manueldicriscito.whumpall.Level;
 import it.manueldicriscito.whumpall.LevelRenderer;
 import it.manueldicriscito.whumpall.Platform;
-import it.manueldicriscito.whumpall.Range;
 import it.manueldicriscito.whumpall.Spike;
 import it.manueldicriscito.whumpall.Whumpall;
 import it.manueldicriscito.whumpall.Particles;
@@ -42,7 +36,6 @@ import static it.manueldicriscito.whumpall.Whumpall.getScreenBottom;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenLeft;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenRight;
 import static it.manueldicriscito.whumpall.Whumpall.getScreenTop;
-import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
 import static it.manueldicriscito.whumpall.Whumpall.playerLine;
 import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
@@ -96,28 +89,21 @@ public class CreateScreen implements Screen, InputProcessor {
     public static final int EDITOR_FINAL = 3;
     public static final int EDITOR_SELECT = 4;
     public static final int EDITOR_SPIKE = 5;
+    public static final int EDITOR_COIN = 6;
     int editorMode = -1;
     boolean movingPlayer = false;
 
-
-    private int gameState;
     boolean tap = false;
     int lv;
 
     private final Whumpall game;
-    private final GlyphLayout glyphLayout = new GlyphLayout();
     private LevelRenderer lr;
     private Level level;
 
     private final DiCriTimer gsTimer;
     private final Image bigCircle;
 
-    private final Animations.AnimatableFloat labelLevelCompletedAlpha = new Animations.AnimatableFloat(0);
-    private final Animations.AnimatableFloat labelAttemptsAlpha = new Animations.AnimatableFloat(0);
-    private final Animations.AnimatableFloat labelBlocksPlacedAlpha = new Animations.AnimatableFloat(0);
-    private final Animations.AnimatableFloat labelTotalBlocksWidthAlpha = new Animations.AnimatableFloat(0);
-
-    private Vector3 touchPos = new Vector3();
+    private final Vector3 touchPos = new Vector3();
 
     Map<String, CircleButton> cbtn = new HashMap<>();
 
@@ -137,6 +123,7 @@ public class CreateScreen implements Screen, InputProcessor {
             Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().y, Animations.AnimationMove.to, this.level.player.pos.y, false, 1500, 0);
         }
     }
+    /*
     public CreateScreen(Whumpall game, String thisScreen) {
         this(game);
         if(!thisScreen.equals("PlayScreen")) {
@@ -145,8 +132,7 @@ public class CreateScreen implements Screen, InputProcessor {
             Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().x, Animations.AnimationMove.to, this.level.player.pos.x, false, 1500, 0);
             Animations.animate(Animations.AnimationEase.out, Animations.AnimationTiming.Expo, Animations.AnimationAction.force, bigCircle.getAnimatableRect().y, Animations.AnimationMove.to, this.level.player.pos.y, false, 1500, 0);
         }
-    }
-
+    }*/
     public CreateScreen(final Whumpall game) {
         this.game = game;
         Gdx.input.setInputProcessor(this);
@@ -294,6 +280,9 @@ public class CreateScreen implements Screen, InputProcessor {
         cbtn.get("padtype").pos.set(getScreenLeft(game.cam)+700, getScreenBottom(game.cam)+100);
         cbtn.get("superJump").pos.set(getScreenLeft(game.cam)+850, getScreenBottom(game.cam)+100);
         cbtn.get("spike").pos.set(getScreenLeft(game.cam)+1000, getScreenBottom(game.cam)+100);
+        if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+            editorMode = EDITOR_COIN;
+        }
         for(Map.Entry<String, CircleButton> entry : cbtn.entrySet()) {
             entry.getValue().update(touchPos);
             if(entry.getValue().justClicked()) {
@@ -410,6 +399,9 @@ public class CreateScreen implements Screen, InputProcessor {
                         s.pos.set(touchPos.x, touchPos.y);
                         s.rotation = 0;
                         level.spikes.add(s);
+                    } else if(editorMode == EDITOR_COIN) {
+                        level.coin = new Coin();
+                        level.coin.setPos(touchPos.x, touchPos.y);
                     }
                 }
             }

@@ -1,7 +1,5 @@
 package it.manueldicriscito.whumpall;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -23,13 +21,10 @@ import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_FINISH;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_PLAY;
 import static it.manueldicriscito.whumpall.Screens.PlayScreen.GAME_START;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_FINISH;
-import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_LEFT;
-import static it.manueldicriscito.whumpall.Whumpall.PAD_DIR_NONE;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_HORIZONTAL;
 import static it.manueldicriscito.whumpall.Whumpall.PAD_TYPE_VERTICAL;
 import static it.manueldicriscito.whumpall.Whumpall.globalVars;
 import static it.manueldicriscito.whumpall.Whumpall.loadLevel;
-import static it.manueldicriscito.whumpall.Whumpall.saveLevel;
 
 
 public class Level {
@@ -53,6 +48,7 @@ public class Level {
     public Animations.AnimatableFloat totalBlocksWidth;
     public LevelData levelData;
     public String name;
+    public Coin coin;
 
 
     Vector3 touchPos;
@@ -90,6 +86,7 @@ public class Level {
             new_spike.size = sd.size;
             spikes.add(new_spike);
         }
+        if(levelData.coin!=null) coin = new Coin(levelData.coin);
         respawnPlayer();
         respawnPlayerGuide();
     }
@@ -156,9 +153,6 @@ public class Level {
         generateLevel(currentLevel);
         respawnPlayer();
         respawnPlayerGuide();
-    }
-    public void setGameState(int gameState) {
-        this.gameState = gameState;
     }
     public void update(float delta, OrthographicCamera cam) {
         if(gameState!=GAME_FINISH) {
